@@ -1,186 +1,222 @@
+import React from 'react';
+
+// Base Piece class
 class Piece {
-  constructor(x, y, isWhite, letter) {
-    this.matrixPosition = { x, y }; // Position of the piece on the board
-    this.white = isWhite; // Whether the piece is white or black
-    this.letter = letter; // The letter representing the piece ('K' for King, 'Q' for Queen, etc.)
-    this.taken = false; // Whether the piece has been captured
+  constructor(x, y, isWhite) {
+    this.matrixPosition = { x, y };
+    this.white = isWhite;
+    this.taken = false;
+  }
+
+  move(x, y) {
+    this.matrixPosition.x = x;
+    this.matrixPosition.y = y;
+  }
+
+  generateMoves(board) {
+    return []; // Override this in specific pieces
+  }
+}
+
+// Board class
+class Board {
+  constructor(pieces) {
+    this.pieces = pieces;
+  }
+
+  getPieceAt(x, y) {
+    return this.pieces.find(piece => piece.matrixPosition.x === x && piece.matrixPosition.y === y);
+  }
+
+  move(from, to) {
+    const pieceToMove = this.getPieceAt(from.x, from.y);
+    if (pieceToMove) {
+      const targetPiece = this.getPieceAt(to.x, to.y);
+      if (targetPiece && targetPiece.white !== pieceToMove.white) {
+        this.pieces = this.pieces.filter(p => p !== targetPiece); // Capture
+      }
+      pieceToMove.move(to.x, to.y);
+    }
+  }
+
+  clone() {
+    const clonedPieces = this.pieces.map(piece =>
+      Object.assign(Object.create(Object.getPrototypeOf(piece)), piece)
+    );
+    return new Board(clonedPieces);
+  }
+}
+
+// Pawn class
+class Pawn extends Piece {
+  generateMoves(board) {
+    const moves = [];
+    const direction = this.white ? -1 : 1;
+
+    // Move one step forward
+    if (!board.getPieceAt(this.matrixPosition.x, this.matrixPosition.y + direction)) {
+      moves.push({ x: this.matrixPosition.x, y: this.matrixPosition.y + direction });
+    }
+
+    // Move two steps forward if at starting position
+    const startRow = this.white ? 6 : 1;
+    if (this.matrixPosition.y === startRow && !board.getPieceAt(this.matrixPosition.x, this.matrixPosition.y + 2 * direction)) {
+      moves.push({ x: this.matrixPosition.x, y: this.matrixPosition.y + 2 * direction });
+    }
+
+    // Capture diagonally
+    for (let dx of [-1, 1]) {
+      const target = board.getPieceAt(this.matrixPosition.x + dx, this.matrixPosition.y + direction);
+      if (target && target.white !== this.white) {
+        moves.push({ x: this.matrixPosition.x + dx, y: this.matrixPosition.y + direction });
+      }
+    }
+
+    return moves;
   }
 
   render() {
-    return <span>{this.letter}</span>; // Render the piece's letter
+    return this.white ? '♙' : '♟';
   }
+}
 
-  move(x, y, board) {
-    console.log(`Moving ${this.letter} from (${this.matrixPosition.x}, ${this.matrixPosition.y}) to (${x}, ${y})`);
-    this.matrixPosition = { x, y }; // Update the piece's position
-  }
-
-  // This will be overridden by specific pieces
-  canMove(x, y, board) {
-    return false;
-  }
-
-  // Generate all possible moves for a piece
+// Rook class
+class Rook extends Piece {
   generateMoves(board) {
     const moves = [];
-    for (let x = 0; x < 8; x++) {
-      for (let y = 0; y < 8; y++) {
-        if (this.canMove(x, y, board)) {
+    const directions = [
+      { dx: 1, dy: 0 }, { dx: -1, dy: 0 },
+      { dx: 0, dy: 1 }, { dx: 0, dy: -1 }
+    ];
+
+    for (let { dx, dy } of directions) {
+      let x = this.matrixPosition.x + dx;
+      let y = this.matrixPosition.y + dy;
+      while (x >= 0 && x < 8 && y >= 0 && y < 8 && !board.getPieceAt(x, y)) {
+        moves.push({ x, y });
+        x += dx;
+        y += dy;
+      }
+
+      const target = board.getPieceAt(x, y);
+      if (target && target.white !== this.white) {
+        moves.push({ x, y });
+      }
+    }
+
+    return moves;
+  }
+
+  render() {
+    return this.white ? '♖' : '♜';
+  }
+}
+
+// Knight class
+class Knight extends Piece {
+  generateMoves(board) {
+    const moves = [];
+    const knightMoves = [
+      { dx: 2, dy: 1 }, { dx: 2, dy: -1 },
+      { dx: -2, dy: 1 }, { dx: -2, dy: -1 },
+      { dx: 1, dy: 2 }, { dx: 1, dy: -2 },
+      { dx: -1, dy: 2 }, { dx: -1, dy: -2 }
+    ];
+
+    for (let { dx, dy } of knightMoves) {
+      const x = this.matrixPosition.x + dx;
+      const y = this.matrixPosition.y + dy;
+      if (x >= 0 && x < 8 && y >= 0 && y < 8) {
+        const target = board.getPieceAt(x, y);
+        if (!target || target.white !== this.white) {
           moves.push({ x, y });
         }
       }
     }
+
     return moves;
   }
-}
 
-class Pawn extends Piece {
-  constructor(x, y, isWhite) {
-    super(x, y, isWhite, isWhite ? 'P' : 'p');
-    this.firstMove = true;
-  }
-
-  canMove(x, y, board) {
-    const forwardDirection = this.white ? -1 : 1;
-    const startRow = this.white ? 6 : 1;
-
-    // Check for one-square move
-    if (x === this.matrixPosition.x && y === this.matrixPosition.y + forwardDirection) {
-      return !board.some(p => p.matrixPosition.x === x && p.matrixPosition.y === y); // Square must be empty
-    }
-
-    // Check for two-square move (first move)
-    if (this.firstMove && x === this.matrixPosition.x && y === this.matrixPosition.y + 2 * forwardDirection) {
-      const oneSquareAhead = board.some(p => p.matrixPosition.x === x && p.matrixPosition.y === this.matrixPosition.y + forwardDirection);
-      const twoSquaresAhead = board.some(p => p.matrixPosition.x === x && p.matrixPosition.y === y);
-      return !oneSquareAhead && !twoSquaresAhead;
-    }
-
-    // Check for diagonal capture
-    if (Math.abs(x - this.matrixPosition.x) === 1 && y === this.matrixPosition.y + forwardDirection) {
-      return board.some(p => p.matrixPosition.x === x && p.matrixPosition.y === y && p.white !== this.white);
-    }
-
-    return false;
-  }
-
-  move(x, y, board) {
-    super.move(x, y, board);
-    this.firstMove = false;
+  render() {
+    return this.white ? '♘' : '♞';
   }
 }
 
-class Rook extends Piece {
-  constructor(x, y, isWhite) {
-    super(x, y, isWhite, isWhite ? 'R' : 'r');
-  }
-
-  canMove(x, y, board) {
-    if (x === this.matrixPosition.x || y === this.matrixPosition.y) {
-      const stepX = x - this.matrixPosition.x > 0 ? 1 : x - this.matrixPosition.x < 0 ? -1 : 0;
-      const stepY = y - this.matrixPosition.y > 0 ? 1 : y - this.matrixPosition.y < 0 ? -1 : 0;
-
-      let tempX = this.matrixPosition.x + stepX;
-      let tempY = this.matrixPosition.y + stepY;
-
-      while (tempX !== x || tempY !== y) {
-        if (board.some(p => p.matrixPosition.x === tempX && p.matrixPosition.y === tempY)) {
-          return false; // Blocked by another piece
-        }
-        tempX += stepX;
-        tempY += stepY;
-      }
-      return !board.some(p => p.matrixPosition.x === x && p.matrixPosition.y === y && p.white === this.white);
-    }
-    return false;
-  }
-}
-
+// Bishop class
 class Bishop extends Piece {
-  constructor(x, y, isWhite) {
-    super(x, y, isWhite, isWhite ? 'B' : 'b');
-  }
+  generateMoves(board) {
+    const moves = [];
+    const directions = [
+      { dx: 1, dy: 1 },
+      { dx: -1, dy: 1 },
+      { dx: 1, dy: -1 },
+      { dx: -1, dy: -1 }
+    ];
 
-  canMove(x, y, board) {
-    const dx = Math.abs(x - this.matrixPosition.x);
-    const dy = Math.abs(y - this.matrixPosition.y);
-    if (dx === dy) {
-      const stepX = x - this.matrixPosition.x > 0 ? 1 : -1;
-      const stepY = y - this.matrixPosition.y > 0 ? 1 : -1;
-
-      let tempX = this.matrixPosition.x + stepX;
-      let tempY = this.matrixPosition.y + stepY;
-
-      while (tempX !== x || tempY !== y) {
-        if (board.some(p => p.matrixPosition.x === tempX && p.matrixPosition.y === tempY)) {
-          return false; // Blocked by another piece
-        }
-        tempX += stepX;
-        tempY += stepY;
+    for (let { dx, dy } of directions) {
+      let x = this.matrixPosition.x + dx;
+      let y = this.matrixPosition.y + dy;
+      while (x >= 0 && x < 8 && y >= 0 && y < 8 && !board.getPieceAt(x, y)) {
+        moves.push({ x, y });
+        x += dx;
+        y += dy;
       }
-      return !board.some(p => p.matrixPosition.x === x && p.matrixPosition.y === y && p.white === this.white);
+
+      const target = board.getPieceAt(x, y);
+      if (target && target.white !== this.white) {
+        moves.push({ x, y });
+      }
     }
-    return false;
+
+    return moves;
+  }
+
+  render() {
+    return this.white ? '♗' : '♝';
   }
 }
 
-class Knight extends Piece {
-  constructor(x, y, isWhite) {
-    super(x, y, isWhite, isWhite ? 'N' : 'n');
-  }
-
-  canMove(x, y, board) {
-    const dx = Math.abs(x - this.matrixPosition.x);
-    const dy = Math.abs(y - this.matrixPosition.y);
-    if ((dx === 2 && dy === 1) || (dx === 1 && dy === 2)) {
-      return !board.some(p => p.matrixPosition.x === x && p.matrixPosition.y === y && p.white === this.white);
-    }
-    return false;
-  }
-}
-
-class King extends Piece {
-  constructor(x, y, isWhite) {
-    super(x, y, isWhite, isWhite ? 'K' : 'k');
-  }
-
-  canMove(x, y, board) {
-    const dx = Math.abs(x - this.matrixPosition.x);
-    const dy = Math.abs(y - this.matrixPosition.y);
-    if (dx <= 1 && dy <= 1) {
-      return !board.some(p => p.matrixPosition.x === x && p.matrixPosition.y === y && p.white === this.white);
-    }
-    return false;
-  }
-}
-
+// Queen class
 class Queen extends Piece {
-  constructor(x, y, isWhite) {
-    super(x, y, isWhite, isWhite ? 'Q' : 'q');
+  generateMoves(board) {
+    const rookMoves = new Rook(this.matrixPosition.x, this.matrixPosition.y, this.white).generateMoves(board);
+    const bishopMoves = new Bishop(this.matrixPosition.x, this.matrixPosition.y, this.white).generateMoves(board);
+    return [...rookMoves, ...bishopMoves];
   }
 
-  canMove(x, y, board) {
-    const dx = Math.abs(x - this.matrixPosition.x);
-    const dy = Math.abs(y - this.matrixPosition.y);
-    if (dx === dy || x === this.matrixPosition.x || y === this.matrixPosition.y) {
-      const stepX = x === this.matrixPosition.x ? 0 : x > this.matrixPosition.x ? 1 : -1;
-      const stepY = y === this.matrixPosition.y ? 0 : y > this.matrixPosition.y ? 1 : -1;
-
-      let tempX = this.matrixPosition.x + stepX;
-      let tempY = this.matrixPosition.y + stepY;
-
-      while (tempX !== x || tempY !== y) {
-        if (board.some(p => p.matrixPosition.x === tempX && p.matrixPosition.y === tempY)) {
-          return false; // Blocked by another piece
-        }
-        tempX += stepX;
-        tempY += stepY;
-      }
-      return !board.some(p => p.matrixPosition.x === x && p.matrixPosition.y === y && p.white === this.white);
-    }
-    return false;
+  render() {
+    return this.white ? '♕' : '♛';
   }
 }
 
-// Export all pieces
-export { King, Queen, Rook, Bishop, Knight, Pawn };
+// King class
+class King extends Piece {
+  generateMoves(board) {
+    const moves = [];
+    const directions = [
+      { dx: 1, dy: 0 }, { dx: -1, dy: 0 },
+      { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
+      { dx: 1, dy: 1 }, { dx: -1, dy: 1 },
+      { dx: 1, dy: -1 }, { dx: -1, dy: -1 }
+    ];
+
+    for (let { dx, dy } of directions) {
+      const x = this.matrixPosition.x + dx;
+      const y = this.matrixPosition.y + dy;
+      if (x >= 0 && x < 8 && y >= 0 && y < 8) {
+        const target = board.getPieceAt(x, y);
+        if (!target || target.white !== this.white) {
+          moves.push({ x, y });
+        }
+      }
+    }
+
+    return moves;
+  }
+
+  render() {
+    return this.white ? '♔' : '♚';
+  }
+}
+
+export { Piece, Pawn, Rook, Knight, Bishop, Queen, King, Board };
