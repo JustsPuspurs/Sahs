@@ -1,0 +1,105 @@
+/* General resets */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Full-screen background with an image */
+.app {
+  background-color: #000;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url('../../Images/Randomstatic.png'); /* Update this path */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+/* Navigation bar styling */
+.navbar {
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+  background-color: rgba(46, 46, 46, 0.8); /* Semi-transparent background for contrast */
+  position: absolute;
+  top: 0;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+
+/* Centered content styling */
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.grid-labels {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Column labels (A-H) styling */
+.column-labels {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0; /* Reduce the gap */
+  text-align: center;
+  margin-bottom: -10px; /* Adjust margin to align better */
+}
+
+.label-column {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 0;
+  line-height: 50px; /* Make the letters vertically centered */
+  width: 50px; /* Adjust to align with each column */
+}
+
+/* Row and Grid layout */
+.row-wrapper {
+  display: flex;
+}
+
+.label-row {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: right;
+  padding-right: 10px;
+  height: 50px;
+  line-height: 50px;
+}
+
+.light {
+  background-color: #9b9595;
+}
+
+.dark {
+  background-color: #000000;
+}
+
+.piece {
+  font-size: 3rem;
+  text-align: center;
+}
