@@ -38,7 +38,7 @@ const ChessBoard = () => {
         // Switch to AI's move after white plays
         setWhitesMove(false);
         setTimeout(() => {
-          const result = runMinimax(newBoard, 3, true); // Run minimax for black
+          const result = runMinimax(newBoard, 1, true); // Run minimax for black
           const bestMove = result.move;
           if (bestMove) {
             const updatedBoard = applyMove(newBoard, bestMove); // Apply the best move
@@ -47,7 +47,7 @@ const ChessBoard = () => {
             console.log("AI has no valid moves.");
           }
           setWhitesMove(true); // Switch back to white's turn
-        },);
+        }, 500); // Add a delay to simulate AI thinking
       } else {
         setSelectedPiece(null); // Invalid move, deselect the piece
       }

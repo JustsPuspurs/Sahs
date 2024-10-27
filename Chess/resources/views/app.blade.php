@@ -6,7 +6,7 @@
     
     <!-- CSRF Token Meta Tag -->
     <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- Include this line for CSRF protection -->
-    <title>Tiešsaistes Šahs</title>
+
     @viteReactRefresh
     @vite('resources/js/app.jsx') <!-- Include your React app -->
     @inertiaHead
