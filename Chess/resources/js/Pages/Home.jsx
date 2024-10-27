@@ -1,35 +1,83 @@
-import React, { useState } from "react";
-import ChessBoard from './ChessBoard'; // Assuming you have the ChessBoard component ready
-import '../../css/Styles/Home.css'; 
+// resources/js/Pages/Home.jsx
 
-const App = () => {
+import React, { useState, useEffect } from 'react';
+import { Inertia } from '@inertiajs/inertia';
+import { usePage } from '@inertiajs/react';
+import ChessBoard from './ChessBoard';
+import '../../css/Styles/Home.css';
+import Register from './Register';
+import Login from './Login';
+
+const Home = () => {
+  const [isRegisterOpen, setRegisterOpen] = useState(false);
+  const [isLoginOpen, setLoginOpen] = useState(false);
+  const { errors, flash, auth } = usePage().props;
+
+  const openRegister = () => setRegisterOpen(true);
+  const closeRegister = () => setRegisterOpen(false);
+
+  const openLogin = () => setLoginOpen(true);
+  const closeLogin = () => setLoginOpen(false);
+
+  const handleLogout = () => {
+    Inertia.post('/logout');
+  };
+
+  useEffect(() => {
+    console.log('Auth props changed:', auth);
+  }, [auth]);
+
   return (
     <div className="app">
-      {/* Navigation bar with buttons */}
       <div className="navbar">
-        <a href="/" className="nav-link">Poga 1</a> {/* First Button */}
-        <a href="/" className="nav-link">Poga 2</a> {/* Second Button */}
-        {/* Add more buttons or links here as needed */}
+        {auth.user ? (
+          <>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="nav-link"
+            >
+              Logout
+            </button>
+            <span>Welcome, {auth.user.username}</span>
+          </>
+        ) : (
+          <>
+            <button onClick={openRegister} className="nav-link">Register</button>
+            <button onClick={openLogin} className="nav-link">Login</button>
+          </>
+        )}
       </div>
 
-      {/* Main Content (Chessboard with labels) */}
+      {flash?.success && (
+        <div className="flash-message success">{flash.success}</div>
+      )}
+      {flash?.error && (
+        <div className="flash-message error">{flash.error}</div>
+      )}
+
+      {isLoginOpen && (
+        <Login isOpen={isLoginOpen} onClose={closeLogin} />
+      )}
+
+      {isRegisterOpen && (
+        <Register isOpen={isRegisterOpen} onClose={closeRegister} />
+      )}
+
       <div className="content">
         <div className="grid-container">
-          {/* Column Labels */}
           <div className="column-labels">
             {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, index) => (
               <div key={index} className="label-column">{label}</div>
             ))}
           </div>
-
-          {/* Grid and Row Labels with Chessboard */}
           <div className="row-wrapper">
             <div className="row-labels">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((label, index) => (
                 <div key={index} className="label-row">{label}</div>
               ))}
             </div>
-              <ChessBoard />
+            <ChessBoard />
           </div>
         </div>
       </div>
@@ -37,4 +85,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Home;
