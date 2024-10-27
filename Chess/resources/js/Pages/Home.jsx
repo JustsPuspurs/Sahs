@@ -1,52 +1,88 @@
-import React, { useState } from "react";
-import { usePage } from "@inertiajs/react";
+// resources/js/Pages/Home.jsx
+
+import React, { useState, useEffect } from 'react';
+import { Inertia } from '@inertiajs/inertia';
+import { usePage } from '@inertiajs/react';
 import ChessBoard from './ChessBoard';
-import '../../css/Styles/Home.css'; 
+import '../../css/Styles/Home.css';
 import Register from './Register';
+import Login from './Login';
 
 const Home = () => {
-    const [isRegisterOpen, setRegisterOpen] = useState(false);
-    const { props } = usePage();
-    const { errors = {}, flash = {} } = props;
+  const [isRegisterOpen, setRegisterOpen] = useState(false);
+  const [isLoginOpen, setLoginOpen] = useState(false);
+  const { errors, flash, auth } = usePage().props;
 
-    const openRegister = () => setRegisterOpen(true);
-    const closeRegister = () => setRegisterOpen(false);
+  const openRegister = () => setRegisterOpen(true);
+  const closeRegister = () => setRegisterOpen(false);
 
-    console.log("Rendering Home component...");
+  const openLogin = () => setLoginOpen(true);
+  const closeLogin = () => setLoginOpen(false);
 
-    return (
-        <div className="app">
-            <div className="navbar">
-                <a onClick={openRegister}>Register</a>
-                <Register isOpen={isRegisterOpen} onClose={closeRegister} />
-                <a href="/" className="nav-link">Poga 2</a>
+  const handleLogout = () => {
+    Inertia.post('/logout');
+  };
+
+  useEffect(() => {
+    console.log('Auth props changed:', auth);
+  }, [auth]);
+
+  return (
+    <div className="app">
+      <div className="navbar">
+        {auth.user ? (
+          <>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="nav-link"
+            >
+              Logout
+            </button>
+            <span>Welcome, {auth.user.username}</span>
+          </>
+        ) : (
+          <>
+            <button onClick={openRegister} className="nav-link">Register</button>
+            <button onClick={openLogin} className="nav-link">Login</button>
+          </>
+        )}
+      </div>
+
+      {flash?.success && (
+        <div className="flash-message success">{flash.success}</div>
+      )}
+      {flash?.error && (
+        <div className="flash-message error">{flash.error}</div>
+      )}
+
+      {isLoginOpen && (
+        <Login isOpen={isLoginOpen} onClose={closeLogin} />
+      )}
+
+      {isRegisterOpen && (
+        <Register isOpen={isRegisterOpen} onClose={closeRegister} />
+      )}
+
+      <div className="content">
+        <div className="grid-container">
+          <div className="column-labels">
+            {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, index) => (
+              <div key={index} className="label-column">{label}</div>
+            ))}
+          </div>
+          <div className="row-wrapper">
+            <div className="row-labels">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((label, index) => (
+                <div key={index} className="label-row">{label}</div>
+              ))}
             </div>
-
-            {flash?.success && (
-                <div className="flash-message success">
-                    {flash.success}
-                </div>
-            )}
-
-            <div className="content">
-                <div className="grid-container">
-                    <div className="column-labels">
-                        {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, index) => (
-                            <div key={index} className="label-column">{label}</div>
-                        ))}
-                    </div>
-                    <div className="row-wrapper">
-                        <div className="row-labels">
-                            {[1, 2, 3, 4, 5, 6, 7, 8].map((label, index) => (
-                                <div key={index} className="label-row">{label}</div>
-                            ))}
-                        </div>
-                        <ChessBoard />
-                    </div>
-                </div>
-            </div>
+            <ChessBoard />
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Home;

@@ -1,22 +1,20 @@
-// resources/js/Pages/Register.jsx
+// resources/js/Pages/Login.jsx
 
 import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import { usePage } from '@inertiajs/react';
 
-const Register = ({ isOpen, onClose }) => {
+const Login = ({ isOpen, onClose }) => {
   const { errors } = usePage().props;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [password_confirmation, setPasswordConfirmation] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    Inertia.post('/register', { username, password, password_confirmation }, {
+    Inertia.post('/login', { username, password }, {
       onSuccess: () => {
         setUsername('');
         setPassword('');
-        setPasswordConfirmation('');
         onClose && onClose();
       },
     });
@@ -51,22 +49,11 @@ const Register = ({ isOpen, onClose }) => {
             />
             {errors.password && <div className="error">{errors.password}</div>}
           </div>
-          <div>
-            <label htmlFor="password_confirmation">Confirm Password:</label>
-            <input
-              id="password_confirmation"
-              type="password"
-              value={password_confirmation}
-              onChange={(e) => setPasswordConfirmation(e.target.value)}
-              placeholder="Confirm Password"
-            />
-            {errors.password_confirmation && <div className="error">{errors.password_confirmation}</div>}
-          </div>
-          <button type="submit">Register</button>
+          <button type="submit">Login</button>
         </form>
       </div>
     </div>
   );
 };
 
-export default Register;
+export default Login;
