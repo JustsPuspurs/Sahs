@@ -8,42 +8,35 @@ use Inertia\Middleware;
 class HandleInertiaRequests extends Middleware
 {
     /**
-     * The root view template that is loaded on the first page visit.
+     * The root template that's loaded on the first page visit.
+     *
+     * @see https://inertiajs.com/server-side-setup#root-template
      *
      * @var string
      */
-    protected $rootView = 'app'; // Ensure this matches your root Blade view
+    protected $rootView = 'app';
 
     /**
-     * Defines the props that are shared by default with all Inertia responses.
+     * Determines the current asset version.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * @see https://inertiajs.com/asset-versioning
+     */
+    public function version(Request $request): ?string
+    {
+        return parent::version($request);
+    }
+
+    /**
+     * Define the props that are shared by default.
+     *
+     * @see https://inertiajs.com/shared-data
+     *
+     * @return array<string, mixed>
      */
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            // Authentication data
-            'auth' => [
-                'user' => $request->user() ? [
-                    'id' => $request->user()->id,
-                    'username' => $request->user()->username,
-                    // Include other user attributes as needed
-                ] : null,
-            ],
-
-            // Flash messages
-            'flash' => [
-                'success' => $request->session()->get('success'),
-                'error'   => $request->session()->get('error'),
-            ],
-
-            // Validation errors
-            'errors' => function () use ($request) {
-                return $request->session()->get('errors')
-                    ? $request->session()->get('errors')->getBag('default')->getMessages()
-                    : (object) [];
-            },
+            //
         ]);
     }
 }
