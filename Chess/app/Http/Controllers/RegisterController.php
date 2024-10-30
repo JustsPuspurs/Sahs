@@ -1,39 +1,29 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
-    /**
-     * Handle the registration request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Inertia\Response
-     */
-    public function register(Request $request)
+    public function registerUser(Request $request)
     {
-        // Validate the request data
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'username' => 'required|string|max:255|unique:users',
-            'password' => 'required|string|confirmed|min:8',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Create the user
-        $user = User::create([
-            'username' => $validated['username'],
-            'password' => Hash::make($validated['password']),
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        User::create([
+            'username' => $request->input('username'),
+            'password' => Hash::make($request->input('password')),
         ]);
 
-        // Log the user in
-        Auth::login($user);
-
-        // Use Inertia::location to perform a full page reload
-        return Inertia::location('/');
+        return back()->with('success', 'Account created successfully');
     }
 }

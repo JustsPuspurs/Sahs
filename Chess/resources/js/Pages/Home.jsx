@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import { Inertia } from '@inertiajs/inertia';
 import { usePage } from '@inertiajs/react';
-import ChessBoard from './ChessBoard'; // Assuming you have a ChessBoard component
-import Login from "./Login";
-import Register from "./Register";
+import ChessBoard from './ChessBoard';
 import '../../css/Styles/Home.css';
+import Register from './Register';
+import Login from './Login';
 
 const Home = () => {
-    const [showLogin, setShowLogin] = useState(false);
-    const [showRegister, setShowRegister] = useState(false);
-    const { auth, flash } = usePage().props || {};
+    const [isRegisterOpen, setRegisterOpen] = useState(false);
+    const [isLoginOpen, setLoginOpen] = useState(false);
+    const { auth, flash } = usePage().props; // Retrieve auth data and flash messages
+
+    const openRegister = () => setRegisterOpen(true);
+    const closeRegister = () => setRegisterOpen(false);
+
+    const openLogin = () => setLoginOpen(true);
+    const closeLogin = () => setLoginOpen(false);
 
     const handleLogout = () => {
         Inertia.post('/logout');
@@ -18,23 +24,26 @@ const Home = () => {
     return (
         <div className="app">
             <div className="navbar">
-                {auth && auth.user ? (
+                {auth?.user ? (
                     <>
                         <span>Welcome, {auth.user.username}</span>
-                        <button onClick={handleLogout} className="nav-link">Logout</button>
+                        <button type="button" onClick={handleLogout} className="nav-link">
+                            Logout
+                        </button>
                     </>
                 ) : (
                     <>
-                        <button onClick={() => setShowLogin(true)} className="nav-link">Login</button>
-                        <button onClick={() => setShowRegister(true)} className="nav-link">Register</button>
+                        <button onClick={openRegister} className="nav-link">Register</button>
+                        <button onClick={openLogin} className="nav-link">Login</button>
                     </>
                 )}
             </div>
 
-            {flash?.success && <div className="flash-message">{flash.success}</div>}
+            {flash?.success && <div className="flash-message success">{flash.success}</div>}
+            {flash?.error && <div className="flash-message error">{flash.error}</div>}
 
-            {showLogin && <Login isOpen={showLogin} onClose={() => setShowLogin(false)} />}
-            {showRegister && <Register isOpen={showRegister} onClose={() => setShowRegister(false)} />}
+            {isLoginOpen && <Login isOpen={isLoginOpen} onClose={closeLogin} />}
+            {isRegisterOpen && <Register isOpen={isRegisterOpen} onClose={closeRegister} />}
 
             <div className="content">
                 <div className="grid-container">

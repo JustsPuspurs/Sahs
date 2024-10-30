@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class LoginController extends Controller
 {
@@ -16,7 +15,7 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/'); // Redirect to home or intended route
+            return redirect()->intended('/'); // Redirect to the intended route or home
         }
 
         return back()->withErrors([

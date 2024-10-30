@@ -9,8 +9,8 @@ const Login = ({ isOpen, onClose }) => {
         event.preventDefault();
         Inertia.post('/login', { username, password }, {
             onSuccess: () => {
-                onClose(); // Close the modal on successful login
-                Inertia.visit('/'); // Refresh or redirect after login
+                onClose();
+                Inertia.visit('/home'); // Refresh or redirect to home after login
             }
         });
     };

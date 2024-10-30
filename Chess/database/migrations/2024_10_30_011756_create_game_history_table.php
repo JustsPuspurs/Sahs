@@ -7,16 +7,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('UserID')->primary();  // Primary key
-            $table->string('username')->unique();
-            $table->string('password');
+        Schema::create('game_history', function (Blueprint $table) {
+            $table->unsignedBigInteger('GameID')->primary();  // Primary key
+            $table->text('Moves');
+            $table->time('Time');
+            $table->string('Side');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('game_history');
     }
 };

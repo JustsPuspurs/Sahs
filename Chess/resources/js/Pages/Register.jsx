@@ -1,23 +1,25 @@
+// resources/js/Pages/Register.jsx
+
 import React, { useState } from 'react';
+import { Inertia } from '@inertiajs/inertia';
+import { usePage } from '@inertiajs/react';
 
 const Register = ({ isOpen, onClose }) => {
-  const [userDetails, setUserDetails] = useState({
-    username: '',
-    password: ''
-  });
+  const { errors } = usePage().props;
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [password_confirmation, setPasswordConfirmation] = useState('');
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setUserDetails(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleRegister = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('Registering:', userDetails);
-    // Here, you would typically handle the registration logic, possibly making an HTTP request to your server
-    // For now, simulate successful registration
-    alert("Registration successful!");
-    onClose(); // Close modal on successful registration
+    Inertia.post('/register', { username, password, password_confirmation }, {
+      onSuccess: () => {
+        setUsername('');
+        setPassword('');
+        setPasswordConfirmation('');
+        onClose && onClose();
+      },
+    });
   };
 
   if (!isOpen) return null;
@@ -25,17 +27,41 @@ const Register = ({ isOpen, onClose }) => {
   return (
     <div className="modal">
       <div className="modal-content">
-        <span className="close-button" onClick={onClose}>&times;</span>
-        <h2>Register</h2>
-        <form onSubmit={handleRegister}>
-          <label>
-            Username:
-            <input type="text" name="username" value={userDetails.username} onChange={handleChange} required />
-          </label>
-          <label>
-            Password:
-            <input type="password" name="password" value={userDetails.password} onChange={handleChange} required />
-          </label>
+        <button onClick={onClose} className="close-button">&times;</button>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="username">Username:</label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+            />
+            {errors.username && <div className="error">{errors.username}</div>}
+          </div>
+          <div>
+            <label htmlFor="password">Password:</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+            />
+            {errors.password && <div className="error">{errors.password}</div>}
+          </div>
+          <div>
+            <label htmlFor="password_confirmation">Confirm Password:</label>
+            <input
+              id="password_confirmation"
+              type="password"
+              value={password_confirmation}
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              placeholder="Confirm Password"
+            />
+            {errors.password_confirmation && <div className="error">{errors.password_confirmation}</div>}
+          </div>
           <button type="submit">Register</button>
         </form>
       </div>
