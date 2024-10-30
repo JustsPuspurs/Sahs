@@ -8,24 +8,24 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('statistics', function (Blueprint $table) {
-            $table->unsignedBigInteger('StatsID')->primary();  // Primary key
+            $table->id('StatsID'); // Laravel's default 'id' method with renamed column
             $table->integer('Win')->default(0);
             $table->integer('Lose')->default(0);
             $table->integer('Draw')->default(0);
 
-            // Foreign keys
-            $table->unsignedBigInteger('UserID');
-            $table->unsignedBigInteger('GameID');
-            $table->timestamps();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Simplified syntax
+            $table->foreignId('game_id')->constrained('game_history')->onDelete('cascade');
 
-            // Foreign key constraints
-            $table->foreign('UserID')->references('UserID')->on('users')->onDelete('cascade');
-            $table->foreign('GameID')->references('GameID')->on('game_history')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
+        Schema::table('statistics', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            $table->dropForeign(['game_id']);
+        });
         Schema::dropIfExists('statistics');
     }
 };

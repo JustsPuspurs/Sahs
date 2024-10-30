@@ -8,8 +8,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('UserID')->primary();  // Primary key
-            $table->string('username')->unique();
+            $table->id(); // Using Laravel's default 'id' as primary key
+            $table->string('username', 255)->unique();
             $table->string('password');
             $table->timestamps();
         });

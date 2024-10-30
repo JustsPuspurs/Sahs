@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('game_history', function (Blueprint $table) {
-            $table->unsignedBigInteger('GameID')->primary();  // Primary key
+            $table->id('GameID'); // Consistent with Laravel's `id()` method
             $table->text('Moves');
             $table->time('Time');
             $table->string('Side');

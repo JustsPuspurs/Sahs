@@ -1,10 +1,12 @@
-import { createInertiaApp } from '@inertiajs/react';
-import ReactDOM from 'react-dom/client';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import './bootstrap';
+import { createInertiaApp } from '@inertiajs/inertia-react';
+import { createRoot } from 'react-dom/client';
 
 createInertiaApp({
-  resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),
-  setup({ el, App, props }) {
-    ReactDOM.createRoot(el).render(<App {...props} />);
-  },
+    // Use dynamic import to resolve page components
+    resolve: name => import(`./Pages/${name}.jsx`).then(module => module.default),
+    setup({ el, App, props }) {
+        // Mount the application
+        createRoot(el).render(<App {...props} />);
+    },
 });
