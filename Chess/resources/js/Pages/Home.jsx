@@ -7,8 +7,7 @@ import ChessBoard from './ChessBoard';
 import '../../css/Styles/Home.css';
 
 const Home = () => {
-  // This hook can only be called inside components that are descendants of an Inertia App component.
-  const { flash, auth } = usePage().props;
+  const { auth, flash } = usePage().props;
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegisterOpen, setRegisterOpen] = useState(false);
 
@@ -27,6 +26,7 @@ const Home = () => {
         ) : (
           <>
             <button onClick={() => setRegisterOpen(true)}>Register</button>
+            <div className="divider"></div>
             <button onClick={() => setLoginOpen(true)}>Login</button>
           </>
         )}
@@ -34,22 +34,28 @@ const Home = () => {
       {flash.message && <div>{flash.message}</div>}
       {isLoginOpen && <Login isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />}
       {isRegisterOpen && <Register isOpen={isRegisterOpen} onClose={() => setRegisterOpen(false)} />}
+      
       <div className="content">
-        <div className="grid-container">
-          <div className="column-labels">
-            {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, index) => (
-              <div key={index} className="label-column">{label}</div>
-            ))}
-          </div>
-          <div className="row-wrapper">
+        {auth.user ? (
+          <div className="chess-container">
+            <div className="column-labels">
+              {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, index) => (
+                <div key={index} className="column-label">{label}</div>
+              ))}
+            </div>
             <div className="row-labels">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((label, index) => (
-                <div key={index} className="label-row">{label}</div>
+                <div key={index} className="row-label">{label}</div>
               ))}
             </div>
             <ChessBoard />
           </div>
-        </div>
+        ) : (
+          <div>
+            <h1>Welcome to Chess Game</h1>
+            <p>Please log in or register to start playing!</p>
+          </div>
+        )}
       </div>
     </div>
   );

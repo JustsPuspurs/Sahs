@@ -13,30 +13,59 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url('../../Images/Randomstatic.png'); /* Update this path */
+  background-image: url('../../Images/Randomstatic.png');
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
   color: white;
   font-family: Arial, sans-serif;
 }
 
 /* Navigation bar styling */
+/* Navigation bar styling */
 .navbar {
   display: flex;
-  justify-content: flex-start;
-  gap: 20px;
+  align-items: center;
+  gap: 15px; /* Slightly reduce gap for a tighter look */
   padding: 20px;
   width: 100%;
-  background-color: rgba(46, 46, 46, 0.8); /* Semi-transparent background for contrast */
+  background-color: rgba(46, 46, 46, 0.85);
   position: absolute;
   top: 0;
+  font-family: Arial, sans-serif;
 }
 
-.nav-link {
-  color: white;
-  text-decoration: none;
+.navbar span {
+  color: #ffffff;
+  font-weight: 300;
+  font-size: 1.1rem;
+}
+
+.navbar button {
+  color: #ffffff;
+  background: transparent;
+  border: none;
   font-size: 1.2rem;
+  font-weight: 500; /* Slightly bolden the button text */
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease, text-shadow 0.2s ease; /* Smooth and quick transitions */
+}
+
+.navbar button:hover {
+  color: #e6e6e6; /* Lighten color on hover */
+  transform: scale(1.08); /* Subtle enlargement */
+  text-shadow: 0px 0px 10px rgba(200, 200, 200, 0.8); /* Soft glow effect */
+}
+
+.navbar button:active {
+  transform: scale(1); /* Remove scale effect when clicked */
+  color: #c0c0c0;
+}
+
+.navbar .divider {
+  height: 30px; /* Adjust height as needed */
+  width: 3px;
+  background-color: #4a4a4a; /* Color of the divider */
+  align-self: center;
 }
 
 /* Centered content styling */
@@ -44,65 +73,87 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
-.grid-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-}
-
-.grid-labels {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Column labels (A-H) styling */
-.column-labels {
+/* Chess container with centered board and labels */
+.chess-container {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 0; /* Reduce the gap */
+  grid-template-columns: 25px auto 25px; /* Reduced padding on the left and right */
+  grid-template-rows: 25px auto 25px;    /* Reduced padding on the bottom */
+  background-color: rgba(46, 46, 46, 0.8); /* Match navbar color */
+  padding: 10px;
+  border: 2px solid #444;
+  gap: 0;
+  margin: auto;
+}
+
+/* Column labels styling */
+.column-labels {
+  grid-column: 2 / 3;
+  display: grid;
+  grid-template-columns: repeat(8, 50px);
   text-align: center;
-  margin-bottom: -10px; /* Adjust margin to align better */
 }
 
-.label-column {
+.column-label {
   color: white;
   font-size: 1.2rem;
   font-weight: bold;
-  padding: 0;
-  line-height: 50px; /* Make the letters vertically centered */
-  width: 50px; /* Adjust to align with each column */
+  padding-bottom: 5px; /* Add space between board and labels */
 }
 
-/* Row and Grid layout */
-.row-wrapper {
+/* Row labels styling */
+.row-labels {
+  grid-row: 2 / 3;
+  display: grid;
+  grid-template-rows: repeat(8, 50px);
+  align-items: center;
+  justify-content: center;
+}
+
+.row-label {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding-right: 5px; /* Add space between board and labels */
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.label-row {
-  color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-align: right;
-  padding-right: 10px;
+/* Chessboard styling */
+.chessboard {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  display: grid;
+  grid-template-columns: repeat(8, 50px);
+  grid-template-rows: repeat(8, 50px);
+  border: 2px solid #444;
+}
+
+.square {
+  width: 50px;
   height: 50px;
-  line-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.light {
+.square.light {
   background-color: #9b9595;
 }
 
-.dark {
-  background-color: #000000;
+.square.dark {
+  background-color: #000;
 }
 
 .piece {
-  font-size: 3rem;
-  text-align: center;
+  font-size: 2rem;
+  color: white;
 }
+
+/* Modal styling */
 .modal {
   position: fixed;
   top: 0;
@@ -120,54 +171,5 @@
   background: white;
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   width: 300px;
-  z-index: 1001;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.form-group {
-  margin-bottom: 10px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.form-actions {
-  text-align: right;
-}
-
-.submit-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
 }

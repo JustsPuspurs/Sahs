@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Pawn, Rook, Knight, Bishop, Queen, King, Board } from './pieces';
 import { runMinimax, applyMove } from './minimax';  // Ensure applyMove is imported
-import '../../css/Styles/ChessBoard.css';
+
 
 const tileSize = 50;
 

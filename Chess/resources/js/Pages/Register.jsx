@@ -1,10 +1,11 @@
 // resources/js/Pages/Register.jsx
-
 import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import { usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/inertia-react';
 
 const Register = ({ isOpen, onClose }) => {
+  if (!isOpen) return null; // Only proceed if the modal is open
+
   const { errors } = usePage().props;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -21,8 +22,6 @@ const Register = ({ isOpen, onClose }) => {
       },
     });
   };
-
-  if (!isOpen) return null;
 
   return (
     <div className="modal">
