@@ -78,7 +78,7 @@
 /* Chess container with centered board and labels */
 .chess-container {
   display: grid;
-  grid-template-columns: 25px auto 25px;
+  /*grid-template-columns: 25px auto 25px;*/
   grid-template-rows: 25px auto 25px;
   background-color: rgba(46, 46, 46, 0.8);
   padding: 10px;
