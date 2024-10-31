@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('statistics', function (Blueprint $table) {
+            $table->id();
+            $table->integer('win')->default(0);
+            $table->integer('lose')->default(0);
+            $table->integer('draw')->default(0);
+            
+            // Foreign key references to users and game_history
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('game_history_id')->constrained('game_history')->onDelete('cascade');
+            
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('statistics');
+    }
+};

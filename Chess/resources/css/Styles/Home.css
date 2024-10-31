@@ -21,11 +21,10 @@
 }
 
 /* Navigation bar styling */
-/* Navigation bar styling */
 .navbar {
   display: flex;
   align-items: center;
-  gap: 15px; /* Slightly reduce gap for a tighter look */
+  gap: 15px;
   padding: 20px;
   width: 100%;
   background-color: rgba(46, 46, 46, 0.85);
@@ -45,26 +44,26 @@
   background: transparent;
   border: none;
   font-size: 1.2rem;
-  font-weight: 500; /* Slightly bolden the button text */
+  font-weight: 500;
   cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease, text-shadow 0.2s ease; /* Smooth and quick transitions */
+  transition: color 0.2s ease, transform 0.2s ease, text-shadow 0.2s ease;
 }
 
 .navbar button:hover {
-  color: #e6e6e6; /* Lighten color on hover */
-  transform: scale(1.08); /* Subtle enlargement */
-  text-shadow: 0px 0px 10px rgba(200, 200, 200, 0.8); /* Soft glow effect */
+  color: #e6e6e6;
+  transform: scale(1.08);
+  text-shadow: 0px 0px 10px rgba(200, 200, 200, 0.8);
 }
 
 .navbar button:active {
-  transform: scale(1); /* Remove scale effect when clicked */
+  transform: scale(1);
   color: #c0c0c0;
 }
 
 .navbar .divider {
-  height: 30px; /* Adjust height as needed */
+  height: 30px;
   width: 3px;
-  background-color: #4a4a4a; /* Color of the divider */
+  background-color: #4a4a4a;
   align-self: center;
 }
 
@@ -79,9 +78,9 @@
 /* Chess container with centered board and labels */
 .chess-container {
   display: grid;
-  grid-template-columns: 25px auto 25px; /* Reduced padding on the left and right */
-  grid-template-rows: 25px auto 25px;    /* Reduced padding on the bottom */
-  background-color: rgba(46, 46, 46, 0.8); /* Match navbar color */
+  grid-template-columns: 25px auto 25px;
+  grid-template-rows: 25px auto 25px;
+  background-color: rgba(46, 46, 46, 0.8);
   padding: 10px;
   border: 2px solid #444;
   gap: 0;
@@ -100,7 +99,7 @@
   color: white;
   font-size: 1.2rem;
   font-weight: bold;
-  padding-bottom: 5px; /* Add space between board and labels */
+  padding-bottom: 5px;
 }
 
 /* Row labels styling */
@@ -116,7 +115,7 @@
   color: white;
   font-size: 1.2rem;
   font-weight: bold;
-  padding-right: 5px; /* Add space between board and labels */
+  padding-right: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -141,11 +140,17 @@
 }
 
 .square.light {
-  background-color: #9b9595;
+  background-color: #d1d1d1;
 }
 
 .square.dark {
-  background-color: #000;
+  background-color: #444444;
+}
+
+.square img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .piece {
@@ -153,7 +158,7 @@
   color: white;
 }
 
-/* Modal styling */
+/* Styling the Modal Content */
 .modal {
   position: fixed;
   top: 0;
@@ -163,13 +168,94 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(46, 46, 46, 0.45);
+  backdrop-filter: blur(8px);
   z-index: 1000;
 }
 
 .modal-content {
-  background: white;
+  background-color: rgba(46, 46, 46, 0.7);
+  color: #ffffff;
   padding: 20px;
-  border-radius: 5px;
-  width: 300px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+  width: 320px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.close-button-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #cccccc;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-button:hover {
+  color: #ffffff;
+}
+
+/* Title styling */
+.modal-content h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* Form styling */
+form label {
+  font-size: 0.9rem;
+  color: #cccccc;
+  margin-bottom: 5px;
+  display: block;
+  text-align: left;
+}
+
+form input {
+  padding: 10px;
+  margin-bottom: 15px;
+  width: 100%;
+  border: 1px solid #555555;
+  border-radius: 4px;
+  background-color: #333333;
+  color: #ffffff;
+}
+
+form button {
+  padding: 10px;
+  background-color: #555555;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+form button:hover {
+  background-color: #777777;
+}
+
+.error-message {
+  color: #ff4d4d; /* Red color for errors */
+  font-size: 0.85rem;
+  margin-top: 4px; /* Small spacing below input */
+  margin-bottom: 10px; /* Small spacing between errors and next input */
+}
+
+.success-message {
+  color: #4caf50; /* Green color for success */
+  font-size: 0.9rem;
+  margin-top: 8px;
+  margin-bottom: 15px;
+  text-align: center;
 }

@@ -1,7 +1,4 @@
 <?php
-
-// LoginController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -22,7 +19,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'username' => 'The provided credentials do not match our records.',
+            'username' => 'The provided password or username do not match our records.',
         ])->withInput();
     }
 

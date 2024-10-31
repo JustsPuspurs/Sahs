@@ -10,11 +10,13 @@ const Login = ({ isOpen, onClose }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     Inertia.post('/login', { username, password }, {
-      onFinish: () => {
+      onSuccess: () => {
         setUsername('');
         setPassword('');
-        if (onClose) onClose();
-      }
+        setTimeout(() => {
+          if (onClose) onClose();
+        }, 500);
+      },
     });
   };
 
@@ -23,7 +25,10 @@ const Login = ({ isOpen, onClose }) => {
   return (
     <div className="modal">
       <div className="modal-content">
-        <button onClick={onClose} className="close-button">×</button>
+        <div className="close-button-container">
+          <button onClick={onClose} className="close-button">×</button>
+        </div>
+        <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="username">Username:</label>
@@ -34,7 +39,7 @@ const Login = ({ isOpen, onClose }) => {
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Username"
             />
-            {errors.username && <div className="error">{errors.username}</div>}
+            {errors.username && <div className="error-message">{errors.username}</div>}
           </div>
           <div>
             <label htmlFor="password">Password:</label>
@@ -45,7 +50,7 @@ const Login = ({ isOpen, onClose }) => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
             />
-            {errors.password && <div className="error">{errors.password}</div>}
+            {errors.password && <div className="error-message">{errors.password}</div>}
           </div>
           <button type="submit">Login</button>
         </form>
