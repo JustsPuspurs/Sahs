@@ -156,6 +156,6 @@ const getPieceValue = piece => {
   if (piece instanceof Knight || piece instanceof Bishop) return 3;
   if (piece instanceof Rook) return 5;
   if (piece instanceof Queen) return 9;
-  if (piece instanceof King) return 1000;
+  if (piece instanceof King) return 100;
   return 0;
 };
