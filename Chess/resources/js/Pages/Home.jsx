@@ -4,12 +4,16 @@ import { usePage } from '@inertiajs/inertia-react';
 import Login from './Login';
 import Register from './Register';
 import ChessBoard from './ChessBoard';
+import MoveList from './GameHistory';
 import '../../css/Styles/Home.css';
 
 const Home = () => {
   const { auth, flash } = usePage().props;
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegisterOpen, setRegisterOpen] = useState(false);
+  // Lift moveHistory state to Home.
+  const [moveHistory, setMoveHistory] = useState([]);
+  const tileSize = 50; // used to set history container height
 
   const handleLogout = () => {
     Inertia.post('/logout');
@@ -37,18 +41,35 @@ const Home = () => {
       
       <div className="content">
         {auth.user ? (
-          <div className="chess-container">
-            <div className="column-labels">
-              {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, index) => (
-                <div key={index} className="column-label">{label}</div>
-              ))}
+          <div style={{ display: "flex", gap: "20px", alignItems: "flex-start", justifyContent: "center" }}>
+            {/* Container for chessboard with labels */}
+            <div>
+              <div className="chess-container">
+                <div className="column-labels">
+                  {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, index) => (
+                    <div key={index} className="column-label">{label}</div>
+                  ))}
+                </div>
+                <div className="row-labels">
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((label, index) => (
+                    <div key={index} className="row-label">{label}</div>
+                  ))}
+                </div>
+                <ChessBoard moveHistory={moveHistory} setMoveHistory={setMoveHistory} />
+              </div>
             </div>
-            <div className="row-labels">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((label, index) => (
-                <div key={index} className="row-label">{label}</div>
-              ))}
+            {/* Separate Game History Container */}
+            <div style={{ 
+              width: "200px", 
+              height: 8 * tileSize, 
+              overflowY: "auto", 
+              backgroundColor: "rgba(46,46,46,0.8)", 
+              padding: "10px", 
+              border: "2px solid #444", 
+              color: "#fff" 
+            }}>
+              <MoveList moves={moveHistory} />
             </div>
-            <ChessBoard />
           </div>
         ) : (
           <div>

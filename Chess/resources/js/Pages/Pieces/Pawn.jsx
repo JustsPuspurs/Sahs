@@ -1,4 +1,3 @@
-// js/Pages/Pieces/Pawn.jsx
 import Piece from './Piece';
 import WhitePawn from '../../../Images/WhitePawn.png';
 import BlackPawn from '../../../Images/BlackPawn.png';
@@ -8,12 +7,21 @@ class Pawn extends Piece {
     const direction = this.white ? -1 : 1;
     const startRow = this.white ? 6 : 1;
 
+    // Single step forward must be empty.
     if (x === this.matrixPosition.x && y === this.matrixPosition.y + direction && !board.getPieceAt(x, y)) {
       return true;
     }
-    if (x === this.matrixPosition.x && y === this.matrixPosition.y + 2 * direction && this.matrixPosition.y === startRow && !board.getPieceAt(x, y)) {
+    // Two steps forward: must be on starting row and both squares (immediate and destination) must be empty.
+    if (
+      x === this.matrixPosition.x &&
+      y === this.matrixPosition.y + 2 * direction &&
+      this.matrixPosition.y === startRow &&
+      !board.getPieceAt(x, this.matrixPosition.y + direction) &&
+      !board.getPieceAt(x, y)
+    ) {
       return true;
     }
+    // Diagonal capture.
     if (Math.abs(x - this.matrixPosition.x) === 1 && y === this.matrixPosition.y + direction) {
       const target = board.getPieceAt(x, y);
       return target && target.white !== this.white;
@@ -25,15 +33,22 @@ class Pawn extends Piece {
     const moves = [];
     const direction = this.white ? -1 : 1;
 
+    // Single step forward.
     if (!board.getPieceAt(this.matrixPosition.x, this.matrixPosition.y + direction)) {
       moves.push({ x: this.matrixPosition.x, y: this.matrixPosition.y + direction });
     }
 
     const startRow = this.white ? 6 : 1;
-    if (this.matrixPosition.y === startRow && !board.getPieceAt(this.matrixPosition.x, this.matrixPosition.y + 2 * direction)) {
+    // Two steps forward: check both intermediate and destination squares.
+    if (
+      this.matrixPosition.y === startRow &&
+      !board.getPieceAt(this.matrixPosition.x, this.matrixPosition.y + direction) &&
+      !board.getPieceAt(this.matrixPosition.x, this.matrixPosition.y + 2 * direction)
+    ) {
       moves.push({ x: this.matrixPosition.x, y: this.matrixPosition.y + 2 * direction });
     }
 
+    // Diagonal captures.
     for (let dx of [-1, 1]) {
       const target = board.getPieceAt(this.matrixPosition.x + dx, this.matrixPosition.y + direction);
       if (target && target.white !== this.white) {
