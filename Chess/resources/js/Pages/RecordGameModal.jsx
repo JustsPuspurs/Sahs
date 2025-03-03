@@ -1,32 +1,27 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const RecordGameModal = ({ isOpen, onClose }) => {
-  // Manage form fields in local state
+const RecordGameModal = ({ isOpen, onClose, computedTime }) => {
+  // Manage form fields in local state (time is now computed, so it's not stored here)
   const [moves, setMoves] = useState('');
-  const [time, setTime] = useState('');
   const [side, setSide] = useState('White');
   const [result, setResult] = useState('Win');
 
-  // Submit handler
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Prepare data to send
-    const gameData = { moves, time, side, result };
+    // Prepare data to send using computedTime (in milliseconds)
+    const gameData = { moves, time: computedTime, side, result };
 
     axios.post('/game/result', gameData)
       .then(response => {
         console.log(response.data.message);
-        // Optionally show a success message or do more logic
         onClose(); // Close the modal
       })
       .catch(error => {
         console.error('Error saving game result:', error);
-        // Optionally show an error message
       });
   };
 
-  // If modal is not open, don't render anything
   if (!isOpen) return null;
 
   return (
@@ -50,15 +45,10 @@ const RecordGameModal = ({ isOpen, onClose }) => {
               placeholder="e.g. e4 e5 Nf3 Nc6 ..."
             />
           </div>
-          {/* Time */}
+          {/* Display computed time */}
           <div>
-            <label htmlFor="time">Time:</label>
-            <input
-              id="time"
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-            />
+            <label>Time:</label>
+            <p>{computedTime} ms</p>
           </div>
           {/* Side */}
           <div>

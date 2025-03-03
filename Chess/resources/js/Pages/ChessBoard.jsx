@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import axios from "axios";
 import Board from "./Pieces/Board";
 import Pawn from "./Pieces/Pawn";
 import Rook from "./Pieces/Rook";
@@ -43,7 +44,6 @@ const promotePawn = (pawn, promotionChoice) => {
   }
 };
 
-// Returns legal moves for the selected piece that do not leave its king in check.
 const getLegalMovesForPiece = (piece, board, isKingInCheck) => {
   const candidateMoves = piece.generateMoves(board);
   return candidateMoves.filter(move => {
@@ -61,6 +61,12 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
   const [selectedPiece, setSelectedPiece] = useState(null);
   const [whitesMove, setWhitesMove] = useState(true);
   const [gameResult, setGameResult] = useState(null);
+  const [playerTotalTime, setPlayerTotalTime] = useState(0);
+  const [gameSaved, setGameSaved] = useState(false);
+
+  // useRef to track player's move times (excluding AI's thinking time)
+  const playerStartTimeRef = useRef(null);
+  const lastPlayerMoveTimeRef = useRef(null);
 
   const isKingInCheck = (brd, isWhitePlayer) => {
     const king = brd.pieces.find(
@@ -97,12 +103,44 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
     return null;
   };
 
+  // Save game result automatically before restarting.
+  const saveGameResult = () => {
+    // Assuming the player is "White"
+    let playerResult = "Win";
+    if (gameResult.includes("Black wins")) {
+      playerResult = "Lose";
+    } else if (gameResult.includes("Draw")) {
+      playerResult = "Draw";
+    }
+    axios.post('/game/result', { 
+      moves: moveHistory.join(" | "),  // combine moves into a single string
+      time: playerTotalTime,
+      side: "White",
+      result: playerResult
+    })
+    .then(response => {
+      console.log("Game saved:", response.data.message);
+      setGameSaved(true);
+    })
+    .catch(error => {
+      console.error("Error saving game:", error);
+    });
+  };
+
   const handleRestart = () => {
+    if (gameResult && !gameSaved) {
+      saveGameResult();
+    }
+    // Reset the board and timing states
     setBoard(initialSetup());
     setSelectedPiece(null);
     setWhitesMove(true);
     setGameResult(null);
     setMoveHistory([]);
+    playerStartTimeRef.current = null;
+    lastPlayerMoveTimeRef.current = null;
+    setPlayerTotalTime(0);
+    setGameSaved(false);
   };
 
   const handleRetire = () => {
@@ -115,6 +153,16 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
     const legalMoves = selectedPiece ? getLegalMovesForPiece(selectedPiece, board, isKingInCheck) : [];
 
     if (selectedPiece && isSquareHighlighted(col, row, legalMoves)) {
+      const now = Date.now();
+      if (!playerStartTimeRef.current) {
+        playerStartTimeRef.current = now;
+        lastPlayerMoveTimeRef.current = now;
+      } else {
+        const delta = now - lastPlayerMoveTimeRef.current;
+        setPlayerTotalTime(prev => prev + delta);
+        lastPlayerMoveTimeRef.current = now;
+      }
+
       const newBoard = board.clone();
       const moveDescription = `${selectedPiece.constructor.name} from ${selectedPiece.matrixPosition.x},${selectedPiece.matrixPosition.y} to ${col},${row}`;
       newBoard.move(selectedPiece.matrixPosition, { x: col, y: row });

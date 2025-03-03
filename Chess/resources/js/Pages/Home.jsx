@@ -1,85 +1,146 @@
-import React, { useState } from 'react';
-import { Inertia } from '@inertiajs/inertia';
-import { usePage } from '@inertiajs/inertia-react';
-import Login from './Login';
-import Register from './Register';
-import ChessBoard from './ChessBoard';
-import MoveList from './GameHistory';
-import '../../css/Styles/Home.css';
+import React, { useState } from "react";
+import { Inertia } from "@inertiajs/inertia";
+import { usePage } from "@inertiajs/inertia-react";
+import Login from "./Login";
+import Register from "./Register";
+import ChessBoard from "./ChessBoard";
+import MoveList from "./GameHistory";
+import RecordGameModal from "./RecordGameModal";
+import Shop from "./Shop"; // Import the Shop component
+import "../../css/Styles/Home.css";
 
 const Home = () => {
-  const { auth, flash } = usePage().props;
-  const [isLoginOpen, setLoginOpen] = useState(false);
-  const [isRegisterOpen, setRegisterOpen] = useState(false);
-  // Lift moveHistory state to Home.
-  const [moveHistory, setMoveHistory] = useState([]);
-  const tileSize = 50; // used to set history container height
+    // Provide default values in case skins or wallet are missing
+    const { auth, flash, skins = [], wallet = { coins: 0 } } = usePage().props;
+    const [isLoginOpen, setLoginOpen] = useState(false);
+    const [isRegisterOpen, setRegisterOpen] = useState(false);
+    const [moveHistory, setMoveHistory] = useState([]);
+    const tileSize = 50;
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [playerTotalTime, setPlayerTotalTime] = useState(0);
+    const [isShopOpen, setIsShopOpen] = useState(false);
+    const [localCoins, setLocalCoins] = useState(wallet.coins);
 
-  const handleLogout = () => {
-    Inertia.post('/logout');
-  };
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+    };
 
-  return (
-    <div className="app">
-      <div className="navbar">
-        {auth.user ? (
-          <>
-            <span>Welcome, {auth.user.username}</span>
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        ) : (
-          <>
-            <button onClick={() => setRegisterOpen(true)}>Register</button>
-            <div className="divider"></div>
-            <button onClick={() => setLoginOpen(true)}>Login</button>
-          </>
-        )}
-      </div>
-      {flash.message && <div>{flash.message}</div>}
-      {isLoginOpen && <Login isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} />}
-      {isRegisterOpen && <Register isOpen={isRegisterOpen} onClose={() => setRegisterOpen(false)} />}
-      
-      <div className="content">
-        {auth.user ? (
-          <div style={{ display: "flex", gap: "20px", alignItems: "flex-start", justifyContent: "center" }}>
-            {/* Container for chessboard with labels */}
-            <div>
-              <div className="chess-container">
-                <div className="column-labels">
-                  {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, index) => (
-                    <div key={index} className="column-label">{label}</div>
-                  ))}
-                </div>
-                <div className="row-labels">
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((label, index) => (
-                    <div key={index} className="row-label">{label}</div>
-                  ))}
-                </div>
-                <ChessBoard moveHistory={moveHistory} setMoveHistory={setMoveHistory} />
-              </div>
+    const handleShopClose = () => {
+        setIsShopOpen(false);
+    };
+
+    const handleSkinPurchase = (cost) => {
+        // Deduct cost from local coin balance
+        setLocalCoins(prev => prev - cost);
+    };
+
+    const handleLogout = () => {
+        Inertia.post("/logout");
+    };
+
+    return (
+        <div className="app">
+            <div className="navbar">
+                {auth.user ? (
+                    <>
+                        <span>Welcome, {auth.user.username}</span>
+                        <button onClick={handleLogout}>Logout</button>
+                        {/* Shop button to open the shop modal */}
+                        <button onClick={() => setIsShopOpen(true)}>Shop</button>
+                    </>
+                ) : (
+                    <>
+                        <button onClick={() => setRegisterOpen(true)}>Register</button>
+                        <div className="divider"></div>
+                        <button onClick={() => setLoginOpen(true)}>Login</button>
+                    </>
+                )}
             </div>
-            {/* Separate Game History Container */}
-            <div style={{ 
-              width: "200px", 
-              height: 8 * tileSize, 
-              overflowY: "auto", 
-              backgroundColor: "rgba(46,46,46,0.8)", 
-              padding: "10px", 
-              border: "2px solid #444", 
-              color: "#fff" 
-            }}>
-              <MoveList moves={moveHistory} />
+            {flash.message && <div>{flash.message}</div>}
+            {isLoginOpen && (
+                <Login
+                    isOpen={isLoginOpen}
+                    onClose={() => setLoginOpen(false)}
+                />
+            )}
+            {isRegisterOpen && (
+                <Register
+                    isOpen={isRegisterOpen}
+                    onClose={() => setRegisterOpen(false)}
+                />
+            )}
+            <div className="content">
+                {auth.user ? (
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "20px",
+                            alignItems: "flex-start",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <div>
+                            <div className="chess-container">
+                                <div className="column-labels">
+                                    {["A", "B", "C", "D", "E", "F", "G", "H"].map(
+                                        (label, index) => (
+                                            <div key={index} className="column-label">
+                                                {label}
+                                            </div>
+                                        )
+                                    )}
+                                </div>
+                                <div className="row-labels">
+                                    {[1, 2, 3, 4, 5, 6, 7, 8].map((label, index) => (
+                                        <div key={index} className="row-label">
+                                            {label}
+                                        </div>
+                                    ))}
+                                </div>
+                                <ChessBoard
+                                    moveHistory={moveHistory}
+                                    setMoveHistory={setMoveHistory}
+                                    setPlayerTotalTime={setPlayerTotalTime}
+                                />
+                            </div>
+                        </div>
+                        <div
+                            style={{
+                                width: "200px",
+                                height: 8 * tileSize,
+                                overflowY: "auto",
+                                backgroundColor: "rgba(46,46,46,0.8)",
+                                padding: "10px",
+                                border: "2px solid #444",
+                                color: "#fff",
+                            }}
+                        >
+                            <MoveList moves={moveHistory} />
+                            <RecordGameModal
+                                isOpen={isModalOpen}
+                                onClose={handleModalClose}
+                                computedTime={playerTotalTime}
+                            />
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <h1>Welcome to Chess Game</h1>
+                        <p>Please log in or register to start playing!</p>
+                    </div>
+                )}
             </div>
-          </div>
-        ) : (
-          <div>
-            <h1>Welcome to Chess Game</h1>
-            <p>Please log in or register to start playing!</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+            {isShopOpen && (
+                <Shop
+                    isOpen={isShopOpen}
+                    onClose={handleShopClose}
+                    skins={skins}
+                    walletCoins={localCoins}
+                    onPurchase={handleSkinPurchase}
+                />
+            )}
+        </div>
+    );
 };
 
 export default Home;

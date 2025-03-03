@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('game_history', function (Blueprint $table) {
             $table->id();
-            $table->text('moves'); // Store all moves as text
-            $table->time('time'); // Duration of the game
-            $table->enum('side', ['White', 'Black']); // Which side the user played
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->text('moves');           // Store all moves as text
+            $table->integer('time');
+            $table->enum('side', ['White', 'Black']);   // Which side the user played
             $table->enum('result', ['Win', 'Lose', 'Draw']); // Outcome of the game
             $table->timestamps();
-        });
+        });        
     }
 
     /**

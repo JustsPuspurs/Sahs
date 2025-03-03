@@ -3,30 +3,43 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class GameController extends Controller
 {
-    /**
-     * Store the game result.
-     */
-    public function storeGameResult(Request $request)
+    public function storeResult(Request $request)
     {
+        Log::info('Received game result:', $request->all());
+
+        // Validate the incoming data.
         $data = $request->validate([
             'moves'  => 'required|string',
-            'time'   => 'required',          // e.g., "00:15:30"
-            'side'   => 'required|in:White,Black',
-            'result' => 'required|in:Win,Lose,Draw',
+            'time'   => 'required|integer',
+            'side'   => 'required|string',
+            'result' => 'required|string',
         ]);
 
+        // Ensure a user is authenticated.
         $user = Auth::user();
+        /** @var \App\Models\User $user */
         if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'User not authenticated'], 401);
         }
 
-        $user->recordGameResult($data['result'], $data['moves'], $data['side'], $data['time']);
+        try {
+            // Use the User model's helper method to record the game result and update wallet.
+            $gameHistory = $user->recordGameResult(
+                $data['result'],
+                $data['moves'],
+                $data['side'],
+                $data['time']
+            );
 
-        return response()->json(['message' => 'Game result saved successfully.']);
+            return response()->json(['message' => 'Game saved successfully', 'game' => $gameHistory]);
+        } catch (\Exception $e) {
+            Log::error("Error saving game: " . $e->getMessage());
+            return response()->json(['message' => 'Failed to save game'], 500);
+        }
     }
 }

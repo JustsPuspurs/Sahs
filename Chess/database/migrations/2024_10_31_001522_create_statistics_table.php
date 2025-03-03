@@ -16,11 +16,8 @@ return new class extends Migration
             $table->integer('win')->default(0);
             $table->integer('lose')->default(0);
             $table->integer('draw')->default(0);
-            
-            // Foreign key references to users and game_history
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('game_history_id')->constrained('game_history')->onDelete('cascade');
-            
+            $table->foreignId('game_history_id')->nullable()->constrained('game_history')->onDelete('cascade');
             $table->timestamps();
         });
     }
