@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Skin;
+use App\Models\Skin; // Import the Skin model
 
 class SkinController extends Controller
 {
     /**
      * Purchase a skin.
      *
-     * @param \Illuminate\Http\Request $request  (not used, but kept for signature consistency)
+     * @param \Illuminate\Http\Request $request
      * @param int $skinId
      * @return \Illuminate\Http\JsonResponse
      */

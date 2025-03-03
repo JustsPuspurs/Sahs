@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Shop = ({ isOpen, onClose, skins = [], walletCoins = 0, onPurchase }) => {
+const Shop = ({ isOpen, onClose, skins = [], walletCoins = 0, ownedSkins = [], onPurchase }) => {
   if (!isOpen) return null;
 
   const [message, setMessage] = useState('');
+
+  // Helper: check if the skin is already owned
+  const isOwned = (skinId) => {
+    return ownedSkins.some((skin) => skin.id === skinId);
+  };
+
   const purchaseSkin = (skinId, cost) => {
     axios.post(`/skins/${skinId}/purchase`)
       .then(response => {
         setMessage(response.data.message);
-        if (onPurchase) {
-          onPurchase(cost);
-        }
+        if (onPurchase) onPurchase(cost);
       })
       .catch(error => {
         setMessage(
@@ -51,9 +55,15 @@ const Shop = ({ isOpen, onClose, skins = [], walletCoins = 0, onPurchase }) => {
               <h3>{skin.name}</h3>
               <p>Type: {skin.piece_type}</p>
               <p>Cost: {skin.cost} coins</p>
-              <button onClick={() => purchaseSkin(skin.id, skin.cost)}>
-                Buy Skin
-              </button>
+              {isOwned(skin.id) ? (
+                <button disabled style={{ background: '#ccc' }}>
+                  Owned
+                </button>
+              ) : (
+                <button onClick={() => purchaseSkin(skin.id, skin.cost)}>
+                  Buy Skin
+                </button>
+              )}
             </div>
           ))}
         </div>

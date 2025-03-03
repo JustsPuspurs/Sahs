@@ -6,12 +6,16 @@ import Register from "./Register";
 import ChessBoard from "./ChessBoard";
 import MoveList from "./GameHistory";
 import RecordGameModal from "./RecordGameModal";
-import Shop from "./Shop"; // Import the Shop component
+import Shop from "./Shop";
 import "../../css/Styles/Home.css";
 
 const Home = () => {
-    // Provide default values in case skins or wallet are missing
+    // If flash is null, default it to an empty object.
     const { auth, flash, skins = [], wallet = { coins: 0 } } = usePage().props;
+    const flashData = flash ?? {};
+    const [ownedSkins, setOwnedSkins] = useState(
+      auth.user && auth.user.skins ? auth.user.skins : []
+    );    
     const [isLoginOpen, setLoginOpen] = useState(false);
     const [isRegisterOpen, setRegisterOpen] = useState(false);
     const [moveHistory, setMoveHistory] = useState([]);
@@ -19,6 +23,7 @@ const Home = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [playerTotalTime, setPlayerTotalTime] = useState(0);
     const [isShopOpen, setIsShopOpen] = useState(false);
+    // Use local state for coins so you can update after a purchase.
     const [localCoins, setLocalCoins] = useState(wallet.coins);
 
     const handleModalClose = () => {
@@ -45,7 +50,6 @@ const Home = () => {
                     <>
                         <span>Welcome, {auth.user.username}</span>
                         <button onClick={handleLogout}>Logout</button>
-                        {/* Shop button to open the shop modal */}
                         <button onClick={() => setIsShopOpen(true)}>Shop</button>
                     </>
                 ) : (
@@ -56,7 +60,7 @@ const Home = () => {
                     </>
                 )}
             </div>
-            {flash.message && <div>{flash.message}</div>}
+            {flashData.message && <div>{flashData.message}</div>}
             {isLoginOpen && (
                 <Login
                     isOpen={isLoginOpen}
