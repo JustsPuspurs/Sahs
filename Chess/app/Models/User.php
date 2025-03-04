@@ -6,13 +6,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\Skin; // Import the Skin model so that the skins() method is recognized
+use App\Models\Skin;
+use App\Models\Statistic;
+use App\Models\GameHistory;
+use App\Models\Wallet;
 
-/**
- * App\Models\User
- *
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Skin[] $skins
- */
 class User extends Authenticatable
 {
     use Notifiable, HasFactory;
@@ -50,25 +48,29 @@ class User extends Authenticatable
     /**
      * A user can have many purchased skins.
      *
+     * The pivot table 'user_skins' should have an 'equipped' boolean column.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function skins(): BelongsToMany
     {
-        return $this->belongsToMany(Skin::class, 'user_skins')->withTimestamps();
+        return $this->belongsToMany(Skin::class, 'user_skins')
+                    ->withTimestamps()
+                    ->withPivot('equipped');
     }
 
     /**
      * Helper to record a game result.
      *
      * @param string $result   'Win', 'Lose', or 'Draw'
-     * @param string $moves    The game moves
+     * @param string $moves    The game moves (text or JSON)
      * @param string $side     'White' or 'Black'
-     * @param int    $time     Game duration (milliseconds)
+     * @param int    $time     Game duration in milliseconds
      * @return \App\Models\GameHistory
      */
     public function recordGameResult($result, $moves, $side, $time)
     {
-        // Create a game history record associated with this user
+        // Create a game history record associated with this user.
         $gameHistory = $this->gameHistories()->create([
             'moves'  => $moves,
             'time'   => $time,

@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import axios from "axios";
+// ChessBoard.jsx
+import React, { useState, useRef, forwardRef, useImperativeHandle } from "react";
 import Board from "./Pieces/Board";
 import Pawn from "./Pieces/Pawn";
 import Rook from "./Pieces/Rook";
@@ -8,17 +8,29 @@ import Bishop from "./Pieces/Bishop";
 import Queen from "./Pieces/Queen";
 import King from "./Pieces/King";
 import { runMinimax, applyMove } from "./PC";
+import axios from "axios";
+
+// Import equipped skin images from your resources folder
+import ClassicPawn from "../../Images/classic_pawn.png";
+import GoldenRook from "../../Images/golden_rook.png";
+
+const imageMapping = {
+  "images/classic_pawn.png": ClassicPawn,
+  "images/golden_rook.png": GoldenRook,
+};
 
 const tileSize = 50;
 
 const initialSetup = () => {
   const pieces = [
+    // Black pieces (top rows)
     new Rook(0, 0, false), new Knight(1, 0, false), new Bishop(2, 0, false),
     new Queen(3, 0, false), new King(4, 0, false), new Bishop(5, 0, false),
     new Knight(6, 0, false), new Rook(7, 0, false),
     new Pawn(0, 1, false), new Pawn(1, 1, false), new Pawn(2, 1, false),
     new Pawn(3, 1, false), new Pawn(4, 1, false), new Pawn(5, 1, false),
     new Pawn(6, 1, false), new Pawn(7, 1, false),
+    // White pieces (bottom rows)
     new Pawn(0, 6, true), new Pawn(1, 6, true), new Pawn(2, 6, true),
     new Pawn(3, 6, true), new Pawn(4, 6, true), new Pawn(5, 6, true),
     new Pawn(6, 6, true), new Pawn(7, 6, true),
@@ -56,7 +68,36 @@ const getLegalMovesForPiece = (piece, board, isKingInCheck) => {
 const isSquareHighlighted = (x, y, moves) =>
   moves.some(move => move.x === x && move.y === y);
 
-const ChessBoard = ({ moveHistory, setMoveHistory }) => {
+/* Conversion functions for algebraic notation */
+const convertWhite = (col, row) => {
+  const file = String.fromCharCode("a".charCodeAt(0) + col);
+  const rank = (row + 1) - 2; // white adjustment: (row+1)-2
+  return file + rank;
+};
+
+const convertBlack = (col, row) => {
+  const file = String.fromCharCode("a".charCodeAt(0) + col);
+  const rank = 8 - row; // black adjustment: 8 - row
+  return file + rank;
+};
+
+const getAlgebraicMove = (piece, destCol, destRow) => {
+  const pieceAbbreviations = {
+    Pawn: "",
+    Knight: "n",
+    Bishop: "b",
+    Rook: "r",
+    Queen: "q",
+    King: "k"
+  };
+  const prefix = pieceAbbreviations[piece.constructor.name] || "";
+  const destination = piece.white
+    ? convertWhite(destCol, destRow)
+    : convertBlack(destCol, destRow);
+  return prefix + destination;
+};
+
+const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, ref) => {
   const [board, setBoard] = useState(initialSetup());
   const [selectedPiece, setSelectedPiece] = useState(null);
   const [whitesMove, setWhitesMove] = useState(true);
@@ -64,7 +105,6 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
   const [playerTotalTime, setPlayerTotalTime] = useState(0);
   const [gameSaved, setGameSaved] = useState(false);
 
-  // useRef to track player's move times (excluding AI's thinking time)
   const playerStartTimeRef = useRef(null);
   const lastPlayerMoveTimeRef = useRef(null);
 
@@ -103,9 +143,17 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
     return null;
   };
 
-  // Save game result automatically before restarting.
+  // This function retires the game by setting gameResult.
+  const handleRetire = () => {
+    setGameResult("Black wins by resignation");
+  };
+
+  // Expose the retireGame function to parent components via ref.
+  useImperativeHandle(ref, () => ({
+    retireGame: handleRetire,
+  }));
+
   const saveGameResult = () => {
-    // Assuming the player is "White"
     let playerResult = "Win";
     if (gameResult.includes("Black wins")) {
       playerResult = "Lose";
@@ -113,7 +161,7 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
       playerResult = "Draw";
     }
     axios.post('/game/result', { 
-      moves: moveHistory.join(" | "),  // combine moves into a single string
+      moves: moveHistory.map(pair => `${pair.white} ${pair.black}`).join(" | "),
       time: playerTotalTime,
       side: "White",
       result: playerResult
@@ -131,7 +179,6 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
     if (gameResult && !gameSaved) {
       saveGameResult();
     }
-    // Reset the board and timing states
     setBoard(initialSetup());
     setSelectedPiece(null);
     setWhitesMove(true);
@@ -141,10 +188,6 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
     lastPlayerMoveTimeRef.current = null;
     setPlayerTotalTime(0);
     setGameSaved(false);
-  };
-
-  const handleRetire = () => {
-    setGameResult("Black wins by resignation");
   };
 
   const handleSquareClick = (col, row) => {
@@ -164,7 +207,10 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
       }
 
       const newBoard = board.clone();
-      const moveDescription = `${selectedPiece.constructor.name} from ${selectedPiece.matrixPosition.x},${selectedPiece.matrixPosition.y} to ${col},${row}`;
+      // Generate algebraic move for White
+      const whiteMoveNotation = getAlgebraicMove(selectedPiece, col, row);
+      setMoveHistory(prev => [...prev, { white: whiteMoveNotation, black: "" }]);
+
       newBoard.move(selectedPiece.matrixPosition, { x: col, y: row });
       if (selectedPiece.constructor.name === "Pawn") {
         const movedPawn = newBoard.getPieceAt(col, row);
@@ -183,7 +229,6 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
         }
       }
       setBoard(newBoard);
-      setMoveHistory([...moveHistory, moveDescription]);
       setSelectedPiece(null);
 
       const resultAfterHuman = checkGameOver(newBoard, false);
@@ -197,10 +242,15 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
         const result = runMinimax(newBoard, 3, false);
         const bestMove = result.move;
         if (bestMove) {
+          const movingPiece = newBoard.getPieceAt(bestMove.from.x, bestMove.from.y);
+          const blackMoveNotation = getAlgebraicMove(movingPiece, bestMove.to.x, bestMove.to.y);
           const updatedBoard = applyMove(newBoard, bestMove);
-          const aiMoveDescription = `AI moves piece from ${bestMove.from.x},${bestMove.from.y} to ${bestMove.to.x},${bestMove.to.y}`;
           setBoard(updatedBoard);
-          setMoveHistory(prev => [...prev, aiMoveDescription]);
+          setMoveHistory(prev => {
+            const lastIndex = prev.length - 1;
+            const newPair = { ...prev[lastIndex], black: blackMoveNotation };
+            return [...prev.slice(0, lastIndex), newPair];
+          });
 
           const resultAfterAI = checkGameOver(updatedBoard, true);
           if (resultAfterAI) {
@@ -226,9 +276,7 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <div style={{ marginBottom: "10px" }}>
-        <button onClick={handleRetire}>Retire</button>
-      </div>
+      {/* Retire button removed from here */}
       <div
         className="chessboard"
         style={{
@@ -286,7 +334,15 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
                               isKingInCheck(board, piece.white) && { border: "2px solid red", borderRadius: "50%" }),
                           }}
                         >
-                          {piece.render()}
+                          {piece.white && equippedSkinsMapping[piece.constructor.name] ? (
+                            <img
+                              src={imageMapping[equippedSkinsMapping[piece.constructor.name]]}
+                              alt={piece.constructor.name}
+                              style={{ width: '100%', height: '100%' }}
+                            />
+                          ) : (
+                            piece.render()
+                          )}
                         </span>
                       )
                   )}
@@ -308,4 +364,4 @@ const ChessBoard = ({ moveHistory, setMoveHistory }) => {
   );
 };
 
-export default ChessBoard;
+export default forwardRef(ChessBoard);

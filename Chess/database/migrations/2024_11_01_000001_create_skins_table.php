@@ -13,7 +13,6 @@ class CreateSkinsTable extends Migration
             $table->string('name');
             $table->string('piece_type'); // e.g. Pawn, Rook, Knight, etc.
             $table->integer('cost');      // Cost in coins
-            $table->string('image')->nullable(); // Image path (optional)
             $table->timestamps();
         });
     }

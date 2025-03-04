@@ -7,7 +7,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
-{
+{   
+
+    public function getGameHistory()
+    {
+        $gameHistory = \App\Models\GameHistory::orderBy('created_at', 'desc')->get();
+        return response()->json($gameHistory);
+    }
+
     public function storeResult(Request $request)
     {
         Log::info('Received game result:', $request->all());

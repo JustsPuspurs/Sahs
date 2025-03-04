@@ -1,26 +1,61 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+// Import images from your resources folder (adjust paths as necessary)
+import ClassicPawn from '../../Images/classic_pawn.png';
+import GoldenRook from '../../Images/golden_rook.png';
 
-const Shop = ({ isOpen, onClose, skins = [], walletCoins = 0, ownedSkins = [], onPurchase }) => {
+// Create a mapping from the database image path to the imported image module
+const imageMapping = {
+  'images/classic_pawn.png': ClassicPawn,
+  'images/golden_rook.png': GoldenRook,
+};
+
+const Shop = ({ isOpen, onClose, skins = [], walletCoins = 0, ownedSkins = [], onPurchase, onEquip }) => {
   if (!isOpen) return null;
 
   const [message, setMessage] = useState('');
 
-  // Helper: check if the skin is already owned
-  const isOwned = (skinId) => {
-    return ownedSkins.some((skin) => skin.id === skinId);
+  // Helper: return the owned skin data (including pivot) if owned.
+  const getOwnedData = (skinId) => {
+    return ownedSkins.find((skin) => skin.id === skinId);
   };
 
-  const purchaseSkin = (skinId, cost) => {
+  const purchaseSkin = (skinId, cost, skin) => {
     axios.post(`/skins/${skinId}/purchase`)
       .then(response => {
         setMessage(response.data.message);
-        if (onPurchase) onPurchase(cost);
+        if (onPurchase) {
+          onPurchase(cost, skin);
+        }
       })
       .catch(error => {
-        setMessage(
-          error.response?.data?.message || 'Error purchasing skin.'
-        );
+        setMessage(error.response?.data?.message || 'Error purchasing skin.');
+      });
+  };
+
+  const equipSkin = (skinId, skin) => {
+    axios.post(`/skins/${skinId}/equip`)
+      .then(response => {
+        setMessage(response.data.message);
+        if (onEquip) {
+          onEquip(skin, true);
+        }
+      })
+      .catch(error => {
+        setMessage(error.response?.data?.message || 'Error equipping skin.');
+      });
+  };
+
+  const unequipSkin = (skinId, skin) => {
+    axios.post(`/skins/${skinId}/unequip`)
+      .then(response => {
+        setMessage(response.data.message);
+        if (onEquip) {
+          onEquip(skin, false);
+        }
+      })
+      .catch(error => {
+        setMessage(error.response?.data?.message || 'Error unequipping skin.');
       });
   };
 
@@ -34,38 +69,49 @@ const Shop = ({ isOpen, onClose, skins = [], walletCoins = 0, ownedSkins = [], o
         <p>Your Coins: {walletCoins}</p>
         {message && <p>{message}</p>}
         <div className="skin-list" style={{ display: 'flex', flexWrap: 'wrap' }}>
-          {skins.map((skin) => (
-            <div
-              key={skin.id}
-              className="skin-item"
-              style={{
-                border: '1px solid #ccc',
-                margin: '10px',
-                padding: '10px',
-                width: '150px',
-              }}
-            >
-              {skin.image && (
-                <img
-                  src={skin.image}
-                  alt={skin.name}
-                  style={{ width: '100%', height: '100px', objectFit: 'cover' }}
-                />
-              )}
-              <h3>{skin.name}</h3>
-              <p>Type: {skin.piece_type}</p>
-              <p>Cost: {skin.cost} coins</p>
-              {isOwned(skin.id) ? (
-                <button disabled style={{ background: '#ccc' }}>
-                  Owned
-                </button>
-              ) : (
-                <button onClick={() => purchaseSkin(skin.id, skin.cost)}>
-                  Buy Skin
-                </button>
-              )}
-            </div>
-          ))}
+          {skins.map((skin) => {
+            const owned = getOwnedData(skin.id);
+            return (
+              <div
+                key={skin.id}
+                className="skin-item"
+                style={{
+                  border: '1px solid #ccc',
+                  margin: '10px',
+                  padding: '10px',
+                  width: '150px',
+                }}
+              >
+                {skin.image && imageMapping[skin.image] ? (
+                  <img
+                    src={imageMapping[skin.image]}
+                    alt={skin.name}
+                    style={{ width: '100%', height: '100px', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <p>No Image</p>
+                )}
+                <h3>{skin.name}</h3>
+                <p>Type: {skin.piece_type}</p>
+                <p>Cost: {skin.cost} coins</p>
+                {owned ? (
+                  owned.pivot && owned.pivot.equipped ? (
+                    <button onClick={() => unequipSkin(skin.id, skin)}>
+                      Unequip
+                    </button>
+                  ) : (
+                    <button onClick={() => equipSkin(skin.id, skin)}>
+                      Equip
+                    </button>
+                  )
+                ) : (
+                  <button onClick={() => purchaseSkin(skin.id, skin.cost, skin)}>
+                    Buy Skin
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

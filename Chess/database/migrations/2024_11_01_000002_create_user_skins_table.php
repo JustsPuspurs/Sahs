@@ -12,8 +12,9 @@ class CreateUserSkinsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('skin_id')->constrained()->onDelete('cascade');
+            $table->boolean('equipped')->default(false);
             $table->timestamps();
-        });
+        });               
     }
 
     public function down()

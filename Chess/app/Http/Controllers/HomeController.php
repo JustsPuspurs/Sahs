@@ -19,10 +19,10 @@ class HomeController extends Controller
         
         return Inertia::render('Home', [
             'auth'       => ['user' => Auth::user()],
-            'flash'      => session('flash'),
+            'flash'      => session('flash') ?? [],
             'skins'      => \App\Models\Skin::all(),
-            'wallet'     => Auth::user()->wallet ?? ['coins' => 0],
+            'wallet'     => Auth::user() && Auth::user()->wallet ? Auth::user()->wallet : ['coins' => 0],
             'ownedSkins' => Auth::user() ? Auth::user()->skins : [],
-        ]);                      
+        ]);                                    
     }
 }
