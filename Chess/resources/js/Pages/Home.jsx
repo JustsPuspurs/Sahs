@@ -1,14 +1,13 @@
-// Home.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Inertia } from "@inertiajs/inertia";
 import { usePage } from "@inertiajs/inertia-react";
 import Login from "./Login";
 import Register from "./Register";
 import ChessBoard from "./ChessBoard";
-import MoveList from "./MoveList"; // Table displaying white and black moves
+import MoveList from "./MoveList";
 import RecordGameModal from "./RecordGameModal";
 import Shop from "./Shop";
-import DataPopup from "./DataPopup"; // Import the new popup component
+import DataPopup from "./DataPopup";
 import "../../css/Styles/Home.css";
 
 const Home = () => {
@@ -16,9 +15,7 @@ const Home = () => {
   const flashData = flash || {};
 
   useEffect(() => {
-    console.log("Skins:", skins);
-    console.log("Wallet:", wallet);
-    console.log("Owned Skins:", ownedSkins);
+
   }, [skins, wallet, ownedSkins]);
 
   const [ownedSkinsState, setOwnedSkinsState] = useState(ownedSkins);
@@ -30,9 +27,8 @@ const Home = () => {
   const [playerTotalTime, setPlayerTotalTime] = useState(0);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [localCoins, setLocalCoins] = useState(wallet.coins);
-  const [isDataPopupOpen, setIsDataPopupOpen] = useState(false); // For our data popup
+  const [isDataPopupOpen, setIsDataPopupOpen] = useState(false);
 
-  // Create a ref for the ChessBoard so we can call its retire method.
   const chessBoardRef = useRef(null);
 
   const handleRetireClick = () => {
@@ -76,15 +72,21 @@ const Home = () => {
       <div className="navbar">
         {auth.user ? (
           <>
-            <span>Welcome, {auth.user.username}</span>
-            <button onClick={handleLogout}>Logout</button>
-            <button onClick={() => setIsShopOpen(true)}>Shop</button>
+            <div className="navbar-left">
+              <span>Welcome, {auth.user.username}</span>
+            </div>
+            <div className="navbar-right">
+              <button style={{ marginRight: '20px' }} onClick={() => setIsShopOpen(true)}>Shop</button>
+              <button style={{ marginRight: '20px' }} onClick={handleLogout}>Logout</button>
+            </div>
           </>
         ) : (
           <>
-            <button onClick={() => setRegisterOpen(true)}>Register</button>
-            <div className="divider"></div>
-            <button onClick={() => setLoginOpen(true)}>Login</button>
+            <div className="navbar-right" style={{display:'flex'}}>
+              <button onClick={() => setRegisterOpen(true)}>Register</button>
+              <div className="divider" style={{marginLeft:'5px', marginRight:'5px'}}></div>
+              <button onClick={() => setLoginOpen(true)}>Login</button>
+            </div>
           </>
         )}
       </div>
@@ -93,8 +95,8 @@ const Home = () => {
       {isRegisterOpen && <Register isOpen={isRegisterOpen} onClose={() => setRegisterOpen(false)} />}
       <div className="content">
         {auth.user ? (
-          <div style={{ display: "flex", gap: "20px", alignItems: "flex-start", justifyContent: "center" }}>
-            <div>
+          <div className="main-content">
+            <div className="chess-section">
               <div className="chess-container">
                 <div className="column-labels">
                   {["A", "B", "C", "D", "E", "F", "G", "H"].map((label, index) => (
@@ -102,9 +104,9 @@ const Home = () => {
                   ))}
                 </div>
                 <div className="row-labels">
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((label, index) => (
-                    <div key={index} className="row-label">{label}</div>
-                  ))}
+                  {[8, 7, 6, 5, 4, 3, 2, 1].map((label, index) => (
+                  <div key={index} className="row-label">{label}</div>
+                 ))}
                 </div>
                 <ChessBoard
                   ref={chessBoardRef}
@@ -114,27 +116,26 @@ const Home = () => {
                   equippedSkinsMapping={equippedMappingWhite}
                 />
               </div>
-              <button onClick={handleRetireClick}>Retire</button>
-              {/* Button to show the data popup */}
-              <button onClick={() => setIsDataPopupOpen(true)}>Show Game History</button>
             </div>
-            <div
-              style={{
-                width: "200px",
-                height: 8 * tileSize,
-                overflowY: "auto",
-                backgroundColor: "rgba(46,46,46,0.8)",
-                padding: "10px",
-                border: "2px solid #444",
-                color: "#fff",
-              }}
-            >
-              <MoveList movePairs={moveHistory} />
-              <RecordGameModal isOpen={isModalOpen} onClose={handleModalClose} computedTime={playerTotalTime} />
+            <div className="sidebar" style={{ width: "300px" }}>
+              <div className="sidebar-scrollable">
+                <div className="move-list-section" style={{ width: "100%" }}>
+                  <MoveList movePairs={moveHistory} />
+                  <RecordGameModal isOpen={isModalOpen} onClose={handleModalClose} computedTime={playerTotalTime} />
+                </div>
+                <div className="custom-buttons-container">
+                  <button className="custom-button" onClick={() => setIsDataPopupOpen(true)}>
+                    Show Game History
+                  </button>
+                  <button className="custom-button" onClick={handleRetireClick}>
+                    Retire
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         ) : (
-          <div>
+          <div className="welcome-section">
             <h1>Welcome to Chess Game</h1>
             <p>Please log in or register to start playing!</p>
           </div>
@@ -151,7 +152,6 @@ const Home = () => {
           onEquip={handleEquipSkin}
         />
       )}
-      {/* Render the DataPopup modal */}
       <DataPopup isOpen={isDataPopupOpen} onClose={() => setIsDataPopupOpen(false)} />
     </div>
   );

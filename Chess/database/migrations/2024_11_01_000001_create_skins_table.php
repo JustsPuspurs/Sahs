@@ -11,8 +11,9 @@ class CreateSkinsTable extends Migration
         Schema::create('skins', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('piece_type'); // e.g. Pawn, Rook, Knight, etc.
-            $table->integer('cost');      // Cost in coins
+            $table->string('piece_type');
+            $table->integer('cost');
+            $table->string('image');
             $table->timestamps();
         });
     }

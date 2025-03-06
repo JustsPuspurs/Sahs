@@ -1,4 +1,3 @@
-// ChessBoard.jsx
 import React, { useState, useRef, forwardRef, useImperativeHandle } from "react";
 import Board from "./Pieces/Board";
 import Pawn from "./Pieces/Pawn";
@@ -10,13 +9,35 @@ import King from "./Pieces/King";
 import { runMinimax, applyMove } from "./PC";
 import axios from "axios";
 
-// Import equipped skin images from your resources folder
-import ClassicPawn from "../../Images/classic_pawn.png";
-import GoldenRook from "../../Images/golden_rook.png";
+// Blue images for pieces (used in the board when blue skin is equipped)
+import BluePawn from '../../Images/BluePawn.png';
+import BlueRook from '../../Images/BlueRook.png';
+import BlueKnight from '../../Images/BlueKnight.png';
+import BlueBishop from '../../Images/BlueBishop.png';
+import BlueQueen from '../../Images/BlueQueen.png';
+import BlueKing from '../../Images/BlueKing.png';
+
+// Default white images (used as fallback in promotion modal until blue ones are equipped)
+import WhiteQueen from '../../Images/WhiteQueen.png';
+import WhiteRook from '../../Images/WhiteRook.png';
+import WhiteKnight from '../../Images/WhiteKnight.png';
+import WhiteBishop from '../../Images/WhiteBishop.png';
 
 const imageMapping = {
-  "images/classic_pawn.png": ClassicPawn,
-  "images/golden_rook.png": GoldenRook,
+  'images/blue_pawn.png': BluePawn,
+  'images/blue_rook.png': BlueRook,
+  'images/blue_knight.png': BlueKnight,
+  'images/blue_bishop.png': BlueBishop,
+  'images/blue_queen.png': BlueQueen,
+  'images/blue_king.png': BlueKing,
+};
+
+// Default promotion images for white pieces
+const defaultPromotionImages = {
+  Queen: WhiteQueen,
+  Rook: WhiteRook,
+  Bishop: WhiteBishop,
+  Knight: WhiteKnight,
 };
 
 const tileSize = 50;
@@ -24,12 +45,13 @@ const tileSize = 50;
 const initialSetup = () => {
   const pieces = [
     // Black pieces (top rows)
-    new Rook(0, 0, false), new Knight(1, 0, false), new Bishop(2, 0, false),
-    new Queen(3, 0, false), new King(4, 0, false), new Bishop(5, 0, false),
-    new Knight(6, 0, false), new Rook(7, 0, false),
-    new Pawn(0, 1, false), new Pawn(1, 1, false), new Pawn(2, 1, false),
-    new Pawn(3, 1, false), new Pawn(4, 1, false), new Pawn(5, 1, false),
-    new Pawn(6, 1, false), new Pawn(7, 1, false),
+    // new Rook(0, 0, false), new Knight(1, 0, false), new Bishop(2, 0, false),
+    // new Queen(3, 0, false), new King(4, 0, false), new Bishop(5, 0, false),
+    // new Knight(6, 0, false), new Rook(7, 0, false),
+    new King(4, 0, false),
+    // new Pawn(0, 1, false), new Pawn(1, 1, false), new Pawn(2, 1, false),
+    // new Pawn(3, 1, false), new Pawn(4, 1, false), new Pawn(5, 1, false),
+    // new Pawn(6, 1, false), new Pawn(7, 1, false),
     // White pieces (bottom rows)
     new Pawn(0, 6, true), new Pawn(1, 6, true), new Pawn(2, 6, true),
     new Pawn(3, 6, true), new Pawn(4, 6, true), new Pawn(5, 6, true),
@@ -68,16 +90,9 @@ const getLegalMovesForPiece = (piece, board, isKingInCheck) => {
 const isSquareHighlighted = (x, y, moves) =>
   moves.some(move => move.x === x && move.y === y);
 
-/* Conversion functions for algebraic notation */
-const convertWhite = (col, row) => {
+const convertCoordinates = (col, row) => {
   const file = String.fromCharCode("a".charCodeAt(0) + col);
-  const rank = (row + 1) - 2; // white adjustment: (row+1)-2
-  return file + rank;
-};
-
-const convertBlack = (col, row) => {
-  const file = String.fromCharCode("a".charCodeAt(0) + col);
-  const rank = 8 - row; // black adjustment: 8 - row
+  const rank = 8 - row;
   return file + rank;
 };
 
@@ -91,9 +106,7 @@ const getAlgebraicMove = (piece, destCol, destRow) => {
     King: "k"
   };
   const prefix = pieceAbbreviations[piece.constructor.name] || "";
-  const destination = piece.white
-    ? convertWhite(destCol, destRow)
-    : convertBlack(destCol, destRow);
+  const destination = convertCoordinates(destCol, destRow);
   return prefix + destination;
 };
 
@@ -104,6 +117,9 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
   const [gameResult, setGameResult] = useState(null);
   const [playerTotalTime, setPlayerTotalTime] = useState(0);
   const [gameSaved, setGameSaved] = useState(false);
+
+  // State for promotion modal: holds the pending board and pawn for promotion.
+  const [promotionInfo, setPromotionInfo] = useState(null);
 
   const playerStartTimeRef = useRef(null);
   const lastPlayerMoveTimeRef = useRef(null);
@@ -143,12 +159,10 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
     return null;
   };
 
-  // This function retires the game by setting gameResult.
   const handleRetire = () => {
     setGameResult("Black wins by resignation");
   };
 
-  // Expose the retireGame function to parent components via ref.
   useImperativeHandle(ref, () => ({
     retireGame: handleRetire,
   }));
@@ -190,8 +204,49 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
     setGameSaved(false);
   };
 
+  // When promotion is needed, this function is called when the user clicks on one of the promotion option images.
+  const handlePromotionChoice = (promotionChoice) => {
+    if (promotionInfo) {
+      const { board: pendingBoard, pawn } = promotionInfo;
+      const promotedPiece = promotePawn(pawn, promotionChoice);
+      pendingBoard.pieces = pendingBoard.pieces.map(p => (p === pawn ? promotedPiece : p));
+      setBoard(pendingBoard);
+      setPromotionInfo(null);
+      setSelectedPiece(null);
+
+      const resultAfterHuman = checkGameOver(pendingBoard, false);
+      if (resultAfterHuman) {
+        setGameResult(resultAfterHuman);
+        return;
+      }
+      setWhitesMove(false);
+      setTimeout(() => {
+        const result = runMinimax(pendingBoard, 3, false);
+        const bestMove = result.move;
+        if (bestMove) {
+          const movingPiece = pendingBoard.getPieceAt(bestMove.from.x, bestMove.from.y);
+          const blackMoveNotation = getAlgebraicMove(movingPiece, bestMove.to.x, bestMove.to.y);
+          const newBoardAfterAI = applyMove(pendingBoard, bestMove);
+          setBoard(newBoardAfterAI);
+          setMoveHistory(prev => {
+            const lastIndex = prev.length - 1;
+            const newPair = { ...prev[lastIndex], black: blackMoveNotation };
+            return [...prev.slice(0, lastIndex), newPair];
+          });
+          const resultAfterAI = checkGameOver(newBoardAfterAI, true);
+          if (resultAfterAI) {
+            setGameResult(resultAfterAI);
+          }
+        } else {
+          console.log("AI has no valid moves.");
+        }
+        setWhitesMove(true);
+      }, 500);
+    }
+  };
+
   const handleSquareClick = (col, row) => {
-    if (gameResult) return;
+    if (gameResult || promotionInfo) return; // Disable clicks when promotion modal is active
 
     const legalMoves = selectedPiece ? getLegalMovesForPiece(selectedPiece, board, isKingInCheck) : [];
 
@@ -207,27 +262,23 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
       }
 
       const newBoard = board.clone();
-      // Generate algebraic move for White
       const whiteMoveNotation = getAlgebraicMove(selectedPiece, col, row);
       setMoveHistory(prev => [...prev, { white: whiteMoveNotation, black: "" }]);
 
       newBoard.move(selectedPiece.matrixPosition, { x: col, y: row });
+      
       if (selectedPiece.constructor.name === "Pawn") {
         const movedPawn = newBoard.getPieceAt(col, row);
         if (
           (movedPawn.white && movedPawn.matrixPosition.y === 0) ||
           (!movedPawn.white && movedPawn.matrixPosition.y === 7)
         ) {
-          let promotionChoice = window.prompt(
-            "Promote pawn to which piece? (Queen, Rook, Bishop, Knight)",
-            "Queen"
-          );
-          const promotedPiece = promotePawn(movedPawn, promotionChoice);
-          newBoard.pieces = newBoard.pieces.map((p) =>
-            p === movedPawn ? promotedPiece : p
-          );
+          // Open the promotion modal.
+          setPromotionInfo({ board: newBoard, pawn: movedPawn });
+          return;
         }
       }
+      
       setBoard(newBoard);
       setSelectedPiece(null);
 
@@ -276,15 +327,7 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      {/* Retire button removed from here */}
-      <div
-        className="chessboard"
-        style={{
-          position: "relative",
-          width: 8 * tileSize,
-          height: 8 * tileSize,
-        }}
-      >
+      <div className="chessboard">
         {Array(8)
           .fill()
           .map((_, row) =>
@@ -294,16 +337,6 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
                 <div
                   key={`square-${row}-${col}`}
                   className={`square ${(row + col) % 2 === 0 ? "light" : "dark"}`}
-                  style={{
-                    position: "absolute",
-                    top: row * tileSize,
-                    left: col * tileSize,
-                    width: tileSize,
-                    height: tileSize,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
                   onClick={() => handleSquareClick(col, row)}
                 >
                   {isSquareHighlighted(col, row, highlightMoves) && (
@@ -350,6 +383,44 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
               ))
           )}
       </div>
+      {promotionInfo && (
+        <div className="promotion-modal" style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(46, 46, 46, 0.8)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 10,
+        }}>
+          <div className="promotion-container" style={{
+            backgroundColor: "rgba(46, 46, 46, 0.9",
+            padding: "20px",
+            borderRadius: "8px",
+            display: "flex",
+            gap: "10px",
+          }}>
+            {["Queen", "Rook", "Bishop", "Knight"].map(pieceType => {
+              // Use the equipped skin image if available; otherwise, use the default white image.
+              const imgSrc = (equippedSkinsMapping && equippedSkinsMapping[pieceType])
+                ? imageMapping[equippedSkinsMapping[pieceType]]
+                : defaultPromotionImages[pieceType];
+              return (
+                <img 
+                  key={pieceType}
+                  src={imgSrc}
+                  alt={pieceType}
+                  style={{ width: "50px", height: "50px", cursor: "pointer", border: "2px solid transparent" }}
+                  onClick={() => handlePromotionChoice(pieceType)}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
       {gameResult && (
         <div className="modal">
           <div className="modal-content">

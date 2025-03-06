@@ -1,4 +1,3 @@
-// js/Pages/Pieces/King.jsx
 import Piece from './Piece';
 import Rook from './Rook';
 import WhiteKing from '../../../Images/WhiteKing.png';

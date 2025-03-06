@@ -6,23 +6,23 @@ import Bishop from "./Pieces/Bishop";
 import Queen from "./Pieces/Queen";
 import King from "./Pieces/King";
 
-// Function to check if the game is over (either checkmate or stalemate)
 const isCheckmateOrStalemate = (board, isWhitePlayer) => {
-    const allMoves = generateMovesForPlayer(board, isWhitePlayer);
-    if (allMoves.length === 0) {
+    const moves = generateMovesForPlayer(board, isWhitePlayer);
+    let hasLegalMove = false;
+    for (let move of moves) {
+        const testBoard = applyMove(board, move);
+        if (testBoard !== board) {
+            hasLegalMove = true;
+            break;
+        }
+    }
+    if (!hasLegalMove) {
         return isKingInCheck(board, isWhitePlayer) ? "checkmate" : "stalemate";
     }
     return false;
 };
 
-// Minimax function with alpha-beta pruning, now handling pawn promotion moves
-export const runMinimax = (
-    board,
-    depth,
-    isMaximizingPlayer,
-    alpha = -Infinity,
-    beta = Infinity
-) => {
+export const runMinimax = (board, depth, isMaximizingPlayer, alpha = -Infinity, beta = Infinity) => {
     const gameStatus = isCheckmateOrStalemate(board, isMaximizingPlayer);
     if (depth === 0 || gameStatus) {
         if (gameStatus === "checkmate") {
@@ -42,7 +42,6 @@ export const runMinimax = (
         const moves = generateMovesForPlayer(board, true); // White's moves
         for (let move of moves) {
             const movingPiece = board.getPieceAt(move.from.x, move.from.y);
-            // Check if this move is a pawn reaching the promotion rank
             if (
                 movingPiece instanceof Pawn &&
                 ((movingPiece.white && move.to.y === 0) ||
@@ -50,83 +49,48 @@ export const runMinimax = (
             ) {
                 let bestPromoEval = -Infinity;
                 let bestPromoType = null;
-                // Evaluate all promotion possibilities for this pawn move
                 for (let promo of ["queen", "rook", "bishop", "knight"]) {
                     const newBoard = board.clone();
                     const pawn = newBoard.getPieceAt(move.from.x, move.from.y);
                     const target = newBoard.getPieceAt(move.to.x, move.to.y);
                     if (target) {
-                        // Remove captured piece
-                        newBoard.pieces = newBoard.pieces.filter(
-                            (p) => p !== target
-                        );
+                        newBoard.pieces = newBoard.pieces.filter((p) => p !== target);
                     }
-                    // Remove the pawn and add the promoted piece
                     newBoard.pieces = newBoard.pieces.filter((p) => p !== pawn);
                     let promotedPiece;
                     switch (promo) {
                         case "rook":
-                            promotedPiece = new Rook(
-                                move.to.x,
-                                move.to.y,
-                                pawn.white
-                            );
+                            promotedPiece = new Rook(move.to.x, move.to.y, pawn.white);
                             break;
                         case "bishop":
-                            promotedPiece = new Bishop(
-                                move.to.x,
-                                move.to.y,
-                                pawn.white
-                            );
+                            promotedPiece = new Bishop(move.to.x, move.to.y, pawn.white);
                             break;
                         case "knight":
-                            promotedPiece = new Knight(
-                                move.to.x,
-                                move.to.y,
-                                pawn.white
-                            );
+                            promotedPiece = new Knight(move.to.x, move.to.y, pawn.white);
                             break;
                         default:
-                            promotedPiece = new Queen(
-                                move.to.x,
-                                move.to.y,
-                                pawn.white
-                            );
+                            promotedPiece = new Queen(move.to.x, move.to.y, pawn.white);
                     }
                     newBoard.pieces.push(promotedPiece);
-                    // Recursively evaluate the board after promotion
-                    const result = runMinimax(
-                        newBoard,
-                        depth - 1,
-                        false,
-                        alpha,
-                        beta
-                    );
-                    const promoEval = result.evaluation; // Renamed variable to avoid reserved word "eval"
+                    const result = runMinimax(newBoard, depth - 1, false, alpha, beta);
+                    const promoEval = result.evaluation;
                     if (promoEval > bestPromoEval) {
                         bestPromoEval = promoEval;
                         bestPromoType = promo;
                     }
                     alpha = Math.max(alpha, bestPromoEval);
-                    if (beta <= alpha) break; // alpha-beta cut-off
+                    if (beta <= alpha) break; // Alpha-beta cut-off
                 }
                 if (bestPromoEval > maxEval) {
                     maxEval = bestPromoEval;
-                    bestMove = { ...move, promotion: bestPromoType }; // attach chosen promotion
+                    bestMove = { ...move, promotion: bestPromoType };
                 }
-                continue; // move on to the next move candidate
+                continue;
             }
 
-            // Normal move handling for non-promotion moves
             const newBoard = applyMove(board, move);
-            if (newBoard === board) continue; // skip illegal moves (e.g., leaving king in check)
-            const evaluation = runMinimax(
-                newBoard,
-                depth - 1,
-                false,
-                alpha,
-                beta
-            ).evaluation;
+            if (newBoard === board) continue; // Skip illegal moves
+            const evaluation = runMinimax(newBoard, depth - 1, false, alpha, beta).evaluation;
             if (evaluation > maxEval) {
                 maxEval = evaluation;
                 bestMove = move;
@@ -140,7 +104,7 @@ export const runMinimax = (
         const moves = generateMovesForPlayer(board, false); // Black's moves
         for (let move of moves) {
             const movingPiece = board.getPieceAt(move.from.x, move.from.y);
-            // Check for pawn promotion moves for minimizing player
+            // Handle pawn promotion moves for minimizing player
             if (
                 movingPiece instanceof Pawn &&
                 ((movingPiece.white && move.to.y === 0) ||
@@ -153,50 +117,26 @@ export const runMinimax = (
                     const pawn = newBoard.getPieceAt(move.from.x, move.from.y);
                     const target = newBoard.getPieceAt(move.to.x, move.to.y);
                     if (target) {
-                        newBoard.pieces = newBoard.pieces.filter(
-                            (p) => p !== target
-                        );
+                        newBoard.pieces = newBoard.pieces.filter((p) => p !== target);
                     }
                     newBoard.pieces = newBoard.pieces.filter((p) => p !== pawn);
                     let promotedPiece;
                     switch (promo) {
                         case "rook":
-                            promotedPiece = new Rook(
-                                move.to.x,
-                                move.to.y,
-                                pawn.white
-                            );
+                            promotedPiece = new Rook(move.to.x, move.to.y, pawn.white);
                             break;
                         case "bishop":
-                            promotedPiece = new Bishop(
-                                move.to.x,
-                                move.to.y,
-                                pawn.white
-                            );
+                            promotedPiece = new Bishop(move.to.x, move.to.y, pawn.white);
                             break;
                         case "knight":
-                            promotedPiece = new Knight(
-                                move.to.x,
-                                move.to.y,
-                                pawn.white
-                            );
+                            promotedPiece = new Knight(move.to.x, move.to.y, pawn.white);
                             break;
                         default:
-                            promotedPiece = new Queen(
-                                move.to.x,
-                                move.to.y,
-                                pawn.white
-                            );
+                            promotedPiece = new Queen(move.to.x, move.to.y, pawn.white);
                     }
                     newBoard.pieces.push(promotedPiece);
-                    const result = runMinimax(
-                        newBoard,
-                        depth - 1,
-                        true,
-                        alpha,
-                        beta
-                    );
-                    const promoEval = result.evaluation; // Renamed variable here as well
+                    const result = runMinimax(newBoard, depth - 1, true, alpha, beta);
+                    const promoEval = result.evaluation;
                     if (promoEval < bestPromoEval) {
                         bestPromoEval = promoEval;
                         bestPromoType = promo;
@@ -211,16 +151,9 @@ export const runMinimax = (
                 continue;
             }
 
-            // Normal move handling
             const newBoard = applyMove(board, move);
             if (newBoard === board) continue;
-            const evaluation = runMinimax(
-                newBoard,
-                depth - 1,
-                true,
-                alpha,
-                beta
-            ).evaluation;
+            const evaluation = runMinimax(newBoard, depth - 1, true, alpha, beta).evaluation;
             if (evaluation < minEval) {
                 minEval = evaluation;
                 bestMove = move;
@@ -232,7 +165,6 @@ export const runMinimax = (
     }
 };
 
-// Generate valid moves for the player
 export const generateMovesForPlayer = (board, isWhitePlayer) => {
     const allMoves = [];
     board.pieces.forEach((piece) => {
@@ -260,7 +192,6 @@ export const generateMovesForPlayer = (board, isWhitePlayer) => {
     return allMoves;
 };
 
-// Check if the king is in check
 const isKingInCheck = (board, isWhitePlayer) => {
     const king = board.pieces.find(
         (piece) => piece instanceof King && piece.white === isWhitePlayer
@@ -274,7 +205,6 @@ const isKingInCheck = (board, isWhitePlayer) => {
     );
 };
 
-// Modified applyMove function with promotion logic integrated
 export const applyMove = (board, move) => {
     if (!move || !move.from || !move.to) {
         console.error("Invalid move:", move);
@@ -287,66 +217,39 @@ export const applyMove = (board, move) => {
         return newBoard;
     }
 
-    // Pawn Promotion handling:
     if (
         pieceToMove instanceof Pawn &&
         ((pieceToMove.white && move.to.y === 0) ||
             (!pieceToMove.white && move.to.y === 7))
     ) {
-        // Use move.promotion if provided; otherwise, default to queen.
-        const promoChoice = move.promotion
-            ? move.promotion.toLowerCase()
-            : "queen";
-        // Remove any opponent piece on the target square (capture)
+        const promoChoice = move.promotion ? move.promotion.toLowerCase() : "queen";
         const targetPiece = newBoard.getPieceAt(move.to.x, move.to.y);
         if (targetPiece && targetPiece.white !== pieceToMove.white) {
             newBoard.pieces = newBoard.pieces.filter((p) => p !== targetPiece);
         }
-        // Remove the pawn from the board
         newBoard.pieces = newBoard.pieces.filter((p) => p !== pieceToMove);
         let promotedPiece;
         switch (promoChoice) {
             case "rook":
-                promotedPiece = new Rook(
-                    move.to.x,
-                    move.to.y,
-                    pieceToMove.white
-                );
+                promotedPiece = new Rook(move.to.x, move.to.y, pieceToMove.white);
                 break;
             case "bishop":
-                promotedPiece = new Bishop(
-                    move.to.x,
-                    move.to.y,
-                    pieceToMove.white
-                );
+                promotedPiece = new Bishop(move.to.x, move.to.y, pieceToMove.white);
                 break;
             case "knight":
-                promotedPiece = new Knight(
-                    move.to.x,
-                    move.to.y,
-                    pieceToMove.white
-                );
+                promotedPiece = new Knight(move.to.x, move.to.y, pieceToMove.white);
                 break;
             default:
-                promotedPiece = new Queen(
-                    move.to.x,
-                    move.to.y,
-                    pieceToMove.white
-                );
+                promotedPiece = new Queen(move.to.x, move.to.y, pieceToMove.white);
         }
         newBoard.pieces.push(promotedPiece);
-        // Verify that this move doesn't leave the king in check.
         if (isKingInCheck(newBoard, pieceToMove.white)) {
-            console.error(
-                "Move leaves king in check (illegal promotion):",
-                move
-            );
+            console.error("Move leaves king in check (illegal promotion):", move);
             return board;
         }
         return newBoard;
     }
 
-    // Normal move handling (non-promotion)
     newBoard.move(move.from, move.to);
     if (isKingInCheck(newBoard, pieceToMove.white)) {
         console.error("Move leaves king in check:", move);
@@ -355,51 +258,74 @@ export const applyMove = (board, move) => {
     return newBoard;
 };
 
-// Board evaluation function for minimax
 const evaluateBoard = (board) => {
     let score = 0;
     board.pieces.forEach((piece) => {
         if (!piece.taken) {
-            // Material value
             score += piece.white ? getPieceValue(piece) : -getPieceValue(piece);
-            // Positional & development value
-            score += piece.white
-                ? getPositionalBonus(piece)
-                : -getPositionalBonus(piece);
+            score += piece.white ? getPositionalBonus(piece) : -getPositionalBonus(piece);
         }
     });
+
+    if (isKingInCheck(board, true)) score -= 0.5;   // White king in check is bad for White.
+    if (isKingInCheck(board, false)) score += 0.5;  // Black king in check is good for White.
+
+    const whiteNonKings = board.pieces.filter(p => p.white && !(p instanceof King));
+    const blackNonKings = board.pieces.filter(p => !p.white && !(p instanceof King));
+    const whiteKing = board.pieces.find(p => p instanceof King && p.white);
+    const blackKing = board.pieces.find(p => p instanceof King && !p.white);
+    if (whiteKing && blackKing) {
+        if (whiteNonKings.length === 0 && blackNonKings.length > 0) {
+            const dx = Math.abs(whiteKing.matrixPosition.x - blackKing.matrixPosition.x);
+            const dy = Math.abs(whiteKing.matrixPosition.y - blackKing.matrixPosition.y);
+            const kingDistance = Math.max(dx, dy);
+            const whiteKingToEdge = Math.min(
+                whiteKing.matrixPosition.x,
+                7 - whiteKing.matrixPosition.x,
+                whiteKing.matrixPosition.y,
+                7 - whiteKing.matrixPosition.y
+            );
+            const mateProgress = (7 - kingDistance) + (3 - whiteKingToEdge);
+            score -= mateProgress * 0.5;
+        }
+        if (blackNonKings.length === 0 && whiteNonKings.length > 0) {
+            const dx = Math.abs(whiteKing.matrixPosition.x - blackKing.matrixPosition.x);
+            const dy = Math.abs(whiteKing.matrixPosition.y - blackKing.matrixPosition.y);
+            const kingDistance = Math.max(dx, dy);
+            const blackKingToEdge = Math.min(
+                blackKing.matrixPosition.x,
+                7 - blackKing.matrixPosition.x,
+                blackKing.matrixPosition.y,
+                7 - blackKing.matrixPosition.y
+            );
+            const mateProgress = (7 - kingDistance) + (3 - blackKingToEdge);
+            score += mateProgress * 0.5;
+        }
+    }
     return score;
 };
 
-// Add a positional bonus for center control
-// Increase positional bonus for center and add development bonuses
 const getPositionalBonus = (piece) => {
     const { x, y } = piece.matrixPosition;
     let bonus = 0;
-    // **Center control**: reward pieces on central squares (d4, d5, e4, e5)
     if ((x === 3 || x === 4) && (y === 3 || y === 4)) {
-        bonus += 1.0; // increased center bonus (was 0.5)
+        bonus += 1.0;
     }
-    // **Minor piece development**: reward knights and bishops that have moved, penalize if still undeveloped
     if (piece instanceof Knight || piece instanceof Bishop) {
-        if (piece.hasMoved) {
-            bonus += 0.5; // knight/bishop developed – add bonus
-        } else {
-            bonus -= 0.5; // still on initial square – slight penalty
-        }
+        bonus += piece.hasMoved ? 0.5 : -0.5;
     }
-    // **Pawn development**: encourage moving central pawns (d- and e-file)
     if (piece instanceof Pawn && (x === 3 || x === 4)) {
-        if (piece.hasMoved) {
-            bonus += 0.3; // pawn has moved from its start (opened lines to bishops/queen)
-        } else {
-            bonus -= 0.3; // pawn still at home blocking pieces
-        }
+        bonus += piece.hasMoved ? 0.3 : -0.3;
+    }
+    if (piece instanceof Rook) {
+        bonus += piece.hasMoved ? 0.2 : -0.2;
+    }
+    if (piece instanceof Queen) {
+        bonus += piece.hasMoved ? 0.1 : -0.1;
     }
     return bonus;
 };
 
-// Assign values to each piece
 const getPieceValue = (piece) => {
     if (piece instanceof Pawn) return 1;
     if (piece instanceof Knight || piece instanceof Bishop) return 3;

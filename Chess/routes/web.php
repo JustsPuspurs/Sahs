@@ -14,11 +14,11 @@ Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::post('/register', [RegisterController::class, 'registerUser'])->name('register');
 Route::post('/game/result', [GameController::class, 'storeResult']);
-Route::get('/game-history', [GameController::class, 'getGameHistory']);
 Route::middleware(['auth'])->group(function () {
     Route::post('/skins/{skinId}/purchase', [SkinController::class, 'purchase']);
     Route::post('/skins/{skinId}/equip', [SkinController::class, 'equip']);
     Route::post('/skins/{skinId}/unequip', [SkinController::class, 'unequip']);
+    Route::get('/game-history', [GameController::class, 'getGameHistory']);
 });
 
 

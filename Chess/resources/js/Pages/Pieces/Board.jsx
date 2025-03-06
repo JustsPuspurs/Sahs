@@ -1,4 +1,3 @@
-// js/Pages/Pieces/Board.jsx
 class Board {
   constructor(pieces) {
     this.pieces = pieces;

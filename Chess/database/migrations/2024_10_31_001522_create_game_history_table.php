@@ -4,29 +4,29 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateGameHistoryTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('game_history', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->text('moves');           // Store all moves as text
-            $table->integer('time');
-            $table->enum('side', ['White', 'Black']);   // Which side the user played
-            $table->enum('result', ['Win', 'Lose', 'Draw']); // Outcome of the game
+            $table->unsignedBigInteger('user_id'); // Associate game with a user
+            $table->string('side');
+            $table->string('result');
+            $table->bigInteger('time')->nullable(); // Game duration in milliseconds
+            $table->text('moves');
             $table->timestamps();
-        });        
+
+            // Set up the foreign key constraint with the users table.
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('game_history');
     }
-};
+}
