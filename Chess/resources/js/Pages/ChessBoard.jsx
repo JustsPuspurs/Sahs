@@ -9,6 +9,7 @@ import King from "./Pieces/King";
 import { runMinimax, applyMove } from "./PC";
 import axios from "axios";
 
+// Blue images for pieces (used in the board when blue skin is equipped)
 import BluePawn from '../../Images/BluePawn.png';
 import BlueRook from '../../Images/BlueRook.png';
 import BlueKnight from '../../Images/BlueKnight.png';
@@ -16,6 +17,7 @@ import BlueBishop from '../../Images/BlueBishop.png';
 import BlueQueen from '../../Images/BlueQueen.png';
 import BlueKing from '../../Images/BlueKing.png';
 
+// Default white images (used as fallback in promotion modal until blue ones are equipped)
 import WhiteQueen from '../../Images/WhiteQueen.png';
 import WhiteRook from '../../Images/WhiteRook.png';
 import WhiteKnight from '../../Images/WhiteKnight.png';
@@ -36,6 +38,8 @@ const defaultPromotionImages = {
   Bishop: WhiteBishop,
   Knight: WhiteKnight,
 };
+
+const tileSize = 50;
 
 const initialSetup = () => {
   const pieces = [
@@ -71,11 +75,13 @@ const promotePawn = (pawn, promotionChoice) => {
   }
 };
 
-// Use applyMove to simulate moves so that moves leaving king in check are filtered out.
-const getLegalMovesForPiece = (piece, board) => {
-  return piece.generateMoves(board).filter(move => {
-    const newBoard = applyMove(board, { from: piece.matrixPosition, to: move });
-    return newBoard !== board;
+// Get legal moves by filtering candidate moves that would leave the king in check.
+const getLegalMovesForPiece = (piece, board, isKingInCheck) => {
+  const candidateMoves = piece.generateMoves(board);
+  return candidateMoves.filter(move => {
+    const newBoard = board.clone();
+    newBoard.move(piece.matrixPosition, { x: move.x, y: move.y });
+    return !isKingInCheck(newBoard, piece.white);
   });
 };
 
@@ -113,6 +119,43 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
   const playerStartTimeRef = useRef(null);
   const lastPlayerMoveTimeRef = useRef(null);
 
+  // isKingInCheck returns true if the king of the given color is under attack.
+  const isKingInCheck = (brd, isWhitePlayer) => {
+    const king = brd.pieces.find(
+      piece => piece.constructor.name === "King" && piece.white === isWhitePlayer
+    );
+    if (!king) return false;
+    let opponentMoves = [];
+    brd.pieces.forEach(piece => {
+      if (piece.white !== isWhitePlayer) {
+        opponentMoves = opponentMoves.concat(piece.generateMoves(brd));
+      }
+    });
+    return opponentMoves.some(
+      move =>
+        move.x === king.matrixPosition.x &&
+        move.y === king.matrixPosition.y
+    );
+  };
+
+  // Check game over condition.
+  const checkGameOver = (brd, isWhitePlayer) => {
+    let legalMoves = [];
+    brd.pieces.forEach(piece => {
+      if (piece.white === isWhitePlayer) {
+        legalMoves = legalMoves.concat(getLegalMovesForPiece(piece, brd, isKingInCheck));
+      }
+    });
+    if (legalMoves.length === 0) {
+      if (isKingInCheck(brd, isWhitePlayer)) {
+        return isWhitePlayer ? "Black wins by checkmate" : "White wins by checkmate";
+      } else {
+        return "Draw by stalemate";
+      }
+    }
+    return null;
+  };
+
   const handleRetire = () => {
     setGameResult("Black wins by resignation");
   };
@@ -123,21 +166,25 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
 
   const saveGameResult = () => {
     let playerResult = "Win";
-    if (gameResult && gameResult.includes("Black wins")) {
+    if (gameResult.includes("Black wins")) {
       playerResult = "Lose";
-    } else if (gameResult && gameResult.includes("Draw")) {
+    } else if (gameResult.includes("Draw")) {
       playerResult = "Draw";
     }
-    axios.post('/game/result', { 
-      moves: moveHistory.map(pair => `${pair.white} ${pair.black}`).join(" | "),
-      time: playerTotalTime,
-      side: "White",
-      result: playerResult
-    })
-    .then(() => {
-      setGameSaved(true);
-    })
-    .catch(() => {});
+    axios
+      .post("/game/result", {
+        moves: moveHistory.map(pair => `${pair.white} ${pair.black}`).join(" | "),
+        time: playerTotalTime,
+        side: "White",
+        result: playerResult
+      })
+      .then(response => {
+        console.log("Game saved:", response.data.message);
+        setGameSaved(true);
+      })
+      .catch(error => {
+        console.error("Error saving game:", error);
+      });
   };
 
   const handleRestart = () => {
@@ -155,32 +202,29 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
     setGameSaved(false);
   };
 
+  // Handle promotion choice when a pawn reaches the back rank.
   const handlePromotionChoice = (promotionChoice) => {
-    if (!promotionInfo) return;
-    const { board: pendingBoard, pawn } = promotionInfo;
-    const promotedPiece = promotePawn(pawn, promotionChoice);
-    pendingBoard.pieces = pendingBoard.pieces.map(p =>
-      p === pawn ? promotedPiece : p
-    );
-    setBoard(pendingBoard);
-    setPromotionInfo(null);
-    setSelectedPiece(null);
+    if (promotionInfo) {
+      const { board: pendingBoard, pawn } = promotionInfo;
+      const promotedPiece = promotePawn(pawn, promotionChoice);
+      pendingBoard.pieces = pendingBoard.pieces.map(p => (p === pawn ? promotedPiece : p));
+      setBoard(pendingBoard);
+      setPromotionInfo(null);
+      setSelectedPiece(null);
 
-    const resultAfterHuman = checkGameOver(pendingBoard, false);
-    if (resultAfterHuman) {
-      setGameResult(resultAfterHuman);
-      return;
-    }
-
-    setWhitesMove(false);
-    setTimeout(() => {
-      const result = runMinimax(pendingBoard, 3, false);
-      const bestMove = result.move;
-      if (bestMove) {
-        const movingPiece = pendingBoard.getPieceAt(bestMove.from.x, bestMove.from.y);
-        const blackMoveNotation = getAlgebraicMove(movingPiece, bestMove.to.x, bestMove.to.y);
-        const newBoardAfterAI = applyMove(pendingBoard, bestMove);
-        if (newBoardAfterAI !== pendingBoard) {
+      const resultAfterHuman = checkGameOver(pendingBoard, false);
+      if (resultAfterHuman) {
+        setGameResult(resultAfterHuman);
+        return;
+      }
+      setWhitesMove(false);
+      setTimeout(() => {
+        const result = runMinimax(pendingBoard, 3, false);
+        const bestMove = result.move;
+        if (bestMove) {
+          const movingPiece = pendingBoard.getPieceAt(bestMove.from.x, bestMove.from.y);
+          const blackMoveNotation = getAlgebraicMove(movingPiece, bestMove.to.x, bestMove.to.y);
+          const newBoardAfterAI = applyMove(pendingBoard, bestMove);
           setBoard(newBoardAfterAI);
           setMoveHistory(prev => {
             const lastIndex = prev.length - 1;
@@ -192,21 +236,17 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
             setGameResult(resultAfterAI);
           }
         } else {
-          setGameResult("Game over: AI resigns");
+          console.log("AI has no valid moves.");
         }
-      } else {
-        setGameResult("Game over: AI resigns");
-      }
-      setWhitesMove(true);
-    }, 500);
+        setWhitesMove(true);
+      }, 500);
+    }
   };
 
   const handleSquareClick = (col, row) => {
     if (gameResult || promotionInfo) return;
 
-    const legalMoves = selectedPiece
-      ? getLegalMovesForPiece(selectedPiece, board)
-      : [];
+    const legalMoves = selectedPiece ? getLegalMovesForPiece(selectedPiece, board, isKingInCheck) : [];
 
     if (selectedPiece && isSquareHighlighted(col, row, legalMoves)) {
       const now = Date.now();
@@ -223,28 +263,45 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
       const whiteMoveNotation = getAlgebraicMove(selectedPiece, col, row);
       setMoveHistory(prev => [...prev, { white: whiteMoveNotation, black: "" }]);
 
-      // Simulate the human move using applyMove
-      const boardAfterHuman = applyMove(newBoard, { from: selectedPiece.matrixPosition, to: { x: col, y: row } });
-      if (boardAfterHuman === newBoard) {
-        // Illegal move: either leaves king in check or would capture a king.
-        return;
+      // Look up the move from legalMoves to check for castling.
+      const selectedMove = legalMoves.find(move => move.x === col && move.y === row);
+      if (selectedPiece.constructor.name === "King" && selectedMove && selectedMove.castling) {
+        // Castling move detected. Move the king...
+        newBoard.move(selectedPiece.matrixPosition, { x: col, y: row });
+        // ... and move the corresponding rook.
+        const y = row;
+        if (selectedMove.castling === "kingside") {
+          const rook = newBoard.getPieceAt(7, y);
+          if (rook) {
+            newBoard.move({ x: 7, y }, { x: 5, y });
+          }
+        } else if (selectedMove.castling === "queenside") {
+          const rook = newBoard.getPieceAt(0, y);
+          if (rook) {
+            newBoard.move({ x: 0, y }, { x: 3, y });
+          }
+        }
+      } else {
+        // Regular move.
+        newBoard.move(selectedPiece.matrixPosition, { x: col, y: row });
       }
 
+      // Handle pawn promotion.
       if (selectedPiece.constructor.name === "Pawn") {
-        const movedPawn = boardAfterHuman.getPieceAt(col, row);
+        const movedPawn = newBoard.getPieceAt(col, row);
         if (
           (movedPawn.white && movedPawn.matrixPosition.y === 0) ||
           (!movedPawn.white && movedPawn.matrixPosition.y === 7)
         ) {
-          setPromotionInfo({ board: boardAfterHuman, pawn: movedPawn });
+          setPromotionInfo({ board: newBoard, pawn: movedPawn });
           return;
         }
       }
 
-      setBoard(boardAfterHuman);
+      setBoard(newBoard);
       setSelectedPiece(null);
 
-      const resultAfterHuman = checkGameOver(boardAfterHuman, false);
+      const resultAfterHuman = checkGameOver(newBoard, false);
       if (resultAfterHuman) {
         setGameResult(resultAfterHuman);
         return;
@@ -252,32 +309,27 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
 
       setWhitesMove(false);
       setTimeout(() => {
-        const result = runMinimax(boardAfterHuman, 3, false);
+        const result = runMinimax(newBoard, 3, false);
         const bestMove = result.move;
         if (bestMove) {
-          const movingPiece = boardAfterHuman.getPieceAt(bestMove.from.x, bestMove.from.y);
+          const movingPiece = newBoard.getPieceAt(bestMove.from.x, bestMove.from.y);
           const blackMoveNotation = getAlgebraicMove(movingPiece, bestMove.to.x, bestMove.to.y);
-          const updatedBoard = applyMove(boardAfterHuman, bestMove);
-          if (updatedBoard !== boardAfterHuman) {
-            setBoard(updatedBoard);
-            setMoveHistory(prev => {
-              const lastIndex = prev.length - 1;
-              const newPair = { ...prev[lastIndex], black: blackMoveNotation };
-              return [...prev.slice(0, lastIndex), newPair];
-            });
-            const resultAfterAI = checkGameOver(updatedBoard, true);
-            if (resultAfterAI) {
-              setGameResult(resultAfterAI);
-            }
-          } else {
-            setGameResult("Game over: AI resigns");
+          const updatedBoard = applyMove(newBoard, bestMove);
+          setBoard(updatedBoard);
+          setMoveHistory(prev => {
+            const lastIndex = prev.length - 1;
+            const newPair = { ...prev[lastIndex], black: blackMoveNotation };
+            return [...prev.slice(0, lastIndex), newPair];
+          });
+          const resultAfterAI = checkGameOver(updatedBoard, true);
+          if (resultAfterAI) {
+            setGameResult(resultAfterAI);
           }
         } else {
-          setGameResult("Game over: AI resigns");
+          console.log("AI has no valid moves.");
         }
         setWhitesMove(true);
       }, 500);
-
       return;
     }
 
@@ -289,117 +341,69 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
     }
   };
 
-  // Game over check using legal moves from getLegalMovesForPiece.
-  const checkGameOver = (brd, isWhitePlayer) => {
-    let legalMoves = [];
-    brd.pieces.forEach(p => {
-      if (p.white === isWhitePlayer) {
-        legalMoves = legalMoves.concat(getLegalMovesForPiece(p, brd));
-      }
-    });
-    if (legalMoves.length === 0) {
-      return isKingInCheck(brd, isWhitePlayer)
-        ? isWhitePlayer ? "Black wins by checkmate" : "White wins by checkmate"
-        : "Draw by stalemate";
-    }
-    return null;
-  };
-
-  // Local check: determine if the king is in check by examining opponent moves.
-  const isKingInCheck = (brd, isWhitePlayer) => {
-    const king = brd.pieces.find(
-      p => p.constructor.name === "King" && p.white === isWhitePlayer
-    );
-    if (!king) return false;
-    let opponentMoves = [];
-    brd.pieces.forEach(p => {
-      if (p.white !== isWhitePlayer) {
-        opponentMoves = opponentMoves.concat(p.generateMoves(brd));
-      }
-    });
-    return opponentMoves.some(
-      move =>
-        move.x === king.matrixPosition.x &&
-        move.y === king.matrixPosition.y
-    );
-  };
-
-  const highlightMoves = selectedPiece
-    ? getLegalMovesForPiece(selectedPiece, board)
-    : [];
+  const highlightMoves = selectedPiece ? getLegalMovesForPiece(selectedPiece, board, isKingInCheck) : [];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
       <div className="chessboard">
-        {Array(8).fill().map((_, row) =>
-          Array(8).fill().map((_, col) => (
-            <div
-              key={`square-${row}-${col}`}
-              className={`square ${(row + col) % 2 === 0 ? "light" : "dark"}`}
-              onClick={() => handleSquareClick(col, row)}
-            >
-              {isSquareHighlighted(col, row, highlightMoves) && (
+        {Array(8)
+          .fill()
+          .map((_, row) =>
+            Array(8)
+              .fill()
+              .map((_, col) => (
                 <div
-                  style={{
-                    position: "absolute",
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: "rgba(0,255,0,0.4)",
-                    borderRadius: "50%",
-                    zIndex: 1,
-                  }}
-                />
-              )}
-              {board.pieces.map((piece, index) => {
-                if (
-                  piece &&
-                  piece.matrixPosition.x === col &&
-                  piece.matrixPosition.y === row
-                ) {
-                  const kingInCheck = piece.constructor.name === "King" && isKingInCheck(board, piece.white);
-                  return (
-                    <span
-                      key={index}
-                      className="piece"
+                  key={`square-${row}-${col}`}
+                  className={`square ${(row + col) % 2 === 0 ? "light" : "dark"}`}
+                  onClick={() => handleSquareClick(col, row)}
+                >
+                  {isSquareHighlighted(col, row, highlightMoves) && (
+                    <div
                       style={{
-                        zIndex: 2,
-                        border: selectedPiece === piece ? "2px solid yellow" : "none",
+                        position: "absolute",
+                        width: "20px",
+                        height: "20px",
+                        backgroundColor: "rgba(0,255,0,0.4)",
                         borderRadius: "50%",
+                        zIndex: 1,
                       }}
-                    >
-                      {/* If the piece is a king in check, overlay a red circle */}
-                      {kingInCheck && (
-                        <div
+                    />
+                  )}
+                  {board.pieces.map(
+                    (piece, index) =>
+                      piece &&
+                      piece.matrixPosition.x === col &&
+                      piece.matrixPosition.y === row && (
+                        <span
+                          key={index}
+                          className="piece"
                           style={{
-                            position: "absolute",
-                            width: "55px",
-                            height: "55px",
-                            border: "2px solid red",
+                            zIndex: 2,
+                            border: selectedPiece === piece ? "2px solid yellow" : "none",
                             borderRadius: "50%",
-                            boxSizing: "border-box",
-                            pointerEvents: "none",
+                            ...(piece.constructor.name === "King" &&
+                              isKingInCheck(board, piece.white) && {
+                                border: "2px solid red",
+                                borderRadius: "50%"
+                              }),
                           }}
-                        />
-                      )}
-                      {piece.white && equippedSkinsMapping[piece.constructor.name] ? (
-                        <img
-                          src={imageMapping[equippedSkinsMapping[piece.constructor.name]]}
-                          alt={piece.constructor.name}
-                          style={{ width: "100%", height: "100%" }}
-                        />
-                      ) : (
-                        piece.render()
-                      )}
-                    </span>
-                  );
-                }
-                return null;
-              })}
-            </div>
-          ))
-        )}
+                        >
+                          {piece.white && equippedSkinsMapping[piece.constructor.name] ? (
+                            <img
+                              src={imageMapping[equippedSkinsMapping[piece.constructor.name]]}
+                              alt={piece.constructor.name}
+                              style={{ width: "100%", height: "100%" }}
+                            />
+                          ) : (
+                            piece.render()
+                          )}
+                        </span>
+                      )
+                  )}
+                </div>
+              ))
+          )}
       </div>
-
       {promotionInfo && (
         <div
           className="promotion-modal"
@@ -427,9 +431,10 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
             }}
           >
             {["Queen", "Rook", "Bishop", "Knight"].map(pieceType => {
-              const imgSrc = equippedSkinsMapping[pieceType]
-                ? imageMapping[equippedSkinsMapping[pieceType]]
-                : defaultPromotionImages[pieceType];
+              const imgSrc =
+                equippedSkinsMapping && equippedSkinsMapping[pieceType]
+                  ? imageMapping[equippedSkinsMapping[pieceType]]
+                  : defaultPromotionImages[pieceType];
               return (
                 <img
                   key={pieceType}
@@ -448,7 +453,6 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
           </div>
         </div>
       )}
-
       {gameResult && (
         <div className="modal">
           <div className="modal-content">
