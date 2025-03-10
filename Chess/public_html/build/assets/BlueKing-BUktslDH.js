@@ -1,0 +1,1 @@
+const s="/build/assets/BluePawn-D4GZSljb.png",e="/build/assets/BlueRook-B0EAmGnC.png",n="/build/assets/BlueKnight-ZCFM1KM8.png",l="/build/assets/BlueBishop-BpFLWYQ8.png",u="/build/assets/BlueQueen-DF3xGvf8.png",B="/build/assets/BlueKing-CNr92plg.png";export{s as B,e as a,n as b,l as c,u as d,B as e};

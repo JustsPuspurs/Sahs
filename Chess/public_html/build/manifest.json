@@ -1,0 +1,225 @@
+{
+  "_BlueKing-BUktslDH.js": {
+    "file": "assets/BlueKing-BUktslDH.js",
+    "name": "BlueKing",
+    "assets": [
+      "assets/BluePawn-D4GZSljb.png",
+      "assets/BlueRook-B0EAmGnC.png",
+      "assets/BlueKnight-ZCFM1KM8.png",
+      "assets/BlueBishop-BpFLWYQ8.png",
+      "assets/BlueQueen-DF3xGvf8.png",
+      "assets/BlueKing-CNr92plg.png"
+    ]
+  },
+  "_PC-D5KEJsuG.js": {
+    "file": "assets/PC-D5KEJsuG.js",
+    "name": "PC",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "assets": [
+      "assets/WhitePawn-DDSTqkDV.png",
+      "assets/BlackPawn-CoKSC4Nu.png",
+      "assets/WhiteRook-Bzu2i_p0.png",
+      "assets/BlackRook-BEU_bG0J.png",
+      "assets/WhiteKnight-td7ohImi.png",
+      "assets/BlackKnight-Bw5nkCIe.png",
+      "assets/WhiteBishop-BJRdsUrQ.png",
+      "assets/BlackBishop-Dg9iklNX.png",
+      "assets/WhiteQueen-JwNoHkfC.png",
+      "assets/BlackQueen-CEOy94br.png",
+      "assets/WhiteKing-D-a6h-6i.png",
+      "assets/BlackKing-ut6FM1LX.png"
+    ]
+  },
+  "resources/Images/BlackBishop.png": {
+    "file": "assets/BlackBishop-Dg9iklNX.png",
+    "src": "resources/Images/BlackBishop.png"
+  },
+  "resources/Images/BlackKing.png": {
+    "file": "assets/BlackKing-ut6FM1LX.png",
+    "src": "resources/Images/BlackKing.png"
+  },
+  "resources/Images/BlackKnight.png": {
+    "file": "assets/BlackKnight-Bw5nkCIe.png",
+    "src": "resources/Images/BlackKnight.png"
+  },
+  "resources/Images/BlackPawn.png": {
+    "file": "assets/BlackPawn-CoKSC4Nu.png",
+    "src": "resources/Images/BlackPawn.png"
+  },
+  "resources/Images/BlackQueen.png": {
+    "file": "assets/BlackQueen-CEOy94br.png",
+    "src": "resources/Images/BlackQueen.png"
+  },
+  "resources/Images/BlackRook.png": {
+    "file": "assets/BlackRook-BEU_bG0J.png",
+    "src": "resources/Images/BlackRook.png"
+  },
+  "resources/Images/BlueBishop.png": {
+    "file": "assets/BlueBishop-BpFLWYQ8.png",
+    "src": "resources/Images/BlueBishop.png"
+  },
+  "resources/Images/BlueKing.png": {
+    "file": "assets/BlueKing-CNr92plg.png",
+    "src": "resources/Images/BlueKing.png"
+  },
+  "resources/Images/BlueKnight.png": {
+    "file": "assets/BlueKnight-ZCFM1KM8.png",
+    "src": "resources/Images/BlueKnight.png"
+  },
+  "resources/Images/BluePawn.png": {
+    "file": "assets/BluePawn-D4GZSljb.png",
+    "src": "resources/Images/BluePawn.png"
+  },
+  "resources/Images/BlueQueen.png": {
+    "file": "assets/BlueQueen-DF3xGvf8.png",
+    "src": "resources/Images/BlueQueen.png"
+  },
+  "resources/Images/BlueRook.png": {
+    "file": "assets/BlueRook-B0EAmGnC.png",
+    "src": "resources/Images/BlueRook.png"
+  },
+  "resources/Images/Randomstatic.png": {
+    "file": "assets/Randomstatic-Dsnts28e.png",
+    "src": "resources/Images/Randomstatic.png"
+  },
+  "resources/Images/WhiteBishop.png": {
+    "file": "assets/WhiteBishop-BJRdsUrQ.png",
+    "src": "resources/Images/WhiteBishop.png"
+  },
+  "resources/Images/WhiteKing.png": {
+    "file": "assets/WhiteKing-D-a6h-6i.png",
+    "src": "resources/Images/WhiteKing.png"
+  },
+  "resources/Images/WhiteKnight.png": {
+    "file": "assets/WhiteKnight-td7ohImi.png",
+    "src": "resources/Images/WhiteKnight.png"
+  },
+  "resources/Images/WhitePawn.png": {
+    "file": "assets/WhitePawn-DDSTqkDV.png",
+    "src": "resources/Images/WhitePawn.png"
+  },
+  "resources/Images/WhiteQueen.png": {
+    "file": "assets/WhiteQueen-JwNoHkfC.png",
+    "src": "resources/Images/WhiteQueen.png"
+  },
+  "resources/Images/WhiteRook.png": {
+    "file": "assets/WhiteRook-Bzu2i_p0.png",
+    "src": "resources/Images/WhiteRook.png"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-l0sNRNKZ.js",
+    "name": "app",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/Pages/ChessBoard.jsx": {
+    "file": "assets/ChessBoard-B1cn_oXM.js",
+    "name": "ChessBoard",
+    "src": "resources/js/Pages/ChessBoard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PC-D5KEJsuG.js",
+      "_BlueKing-BUktslDH.js"
+    ]
+  },
+  "resources/js/Pages/DataPopup.jsx": {
+    "file": "assets/DataPopup-BJcfVTnA.js",
+    "name": "DataPopup",
+    "src": "resources/js/Pages/DataPopup.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Home.jsx": {
+    "file": "assets/Home-CEyqBfBa.js",
+    "name": "Home",
+    "src": "resources/js/Pages/Home.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Login.jsx",
+      "resources/js/Pages/Register.jsx",
+      "resources/js/Pages/ChessBoard.jsx",
+      "resources/js/Pages/MoveList.jsx",
+      "resources/js/Pages/RecordGameModal.jsx",
+      "resources/js/Pages/Shop.jsx",
+      "resources/js/Pages/DataPopup.jsx",
+      "_PC-D5KEJsuG.js",
+      "_BlueKing-BUktslDH.js"
+    ],
+    "css": [
+      "assets/Home-C8M3APHK.css"
+    ],
+    "assets": [
+      "assets/Randomstatic-Dsnts28e.png"
+    ]
+  },
+  "resources/js/Pages/Login.jsx": {
+    "file": "assets/Login-BZtMQ_Ab.js",
+    "name": "Login",
+    "src": "resources/js/Pages/Login.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/MoveList.jsx": {
+    "file": "assets/MoveList-ymGklSmj.js",
+    "name": "MoveList",
+    "src": "resources/js/Pages/MoveList.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/RecordGameModal.jsx": {
+    "file": "assets/RecordGameModal-DbkKQHbu.js",
+    "name": "RecordGameModal",
+    "src": "resources/js/Pages/RecordGameModal.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Register.jsx": {
+    "file": "assets/Register-DfxxCBnZ.js",
+    "name": "Register",
+    "src": "resources/js/Pages/Register.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Shop.jsx": {
+    "file": "assets/Shop-L2OPM4VK.js",
+    "name": "Shop",
+    "src": "resources/js/Pages/Shop.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_BlueKing-BUktslDH.js"
+    ]
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-CnohEUH0.js",
+    "name": "app",
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/Pages/ChessBoard.jsx",
+      "resources/js/Pages/DataPopup.jsx",
+      "resources/js/Pages/Home.jsx",
+      "resources/js/Pages/Login.jsx",
+      "resources/js/Pages/MoveList.jsx",
+      "_PC-D5KEJsuG.js",
+      "resources/js/Pages/RecordGameModal.jsx",
+      "resources/js/Pages/Register.jsx",
+      "resources/js/Pages/Shop.jsx"
+    ]
+  }
+}
