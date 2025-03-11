@@ -232,23 +232,21 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
 
       // 1) Kingside: e->g (x=4->6), rook h->f (x=7->5)
       // 2) Queenside: e->b (x=4->1), rook a->c (x=0->2)
-      if (selectedPiece.constructor.name === "King" && selectedMove && selectedMove.castling) {
-        if (selectedMove.castling === "kingside") {
-          // Move King from x=4 to x=6
-          newBoard.move(selectedPiece.matrixPosition, { x: 6, y: row });
-          // Move Rook from x=7 to x=5
-          const rook = newBoard.getPieceAt(7, row);
-          if (rook) {
-            newBoard.move({ x: 7, y: row }, { x: 6, y: row });
-          }
-        } else if (selectedMove.castling === "queenside") {
-          // Move King from x=4 to x=1
-          newBoard.move(selectedPiece.matrixPosition, { x: 1, y: row });
-          // Move Rook from x=0 to x=2
-          const rook = newBoard.getPieceAt(0, row);
-          if (rook) {
-            newBoard.move({ x: 0, y: row }, { x: 2, y: row });
-          }
+      if (selectedMove.castling === "kingside") {
+        // King: 4 -> 6
+        newBoard.move(selectedPiece.matrixPosition, { x: 6, y: row });
+        // Rook: 7 -> 5
+        const rook = newBoard.getPieceAt(7, row);
+        if (rook) {
+          newBoard.move({ x: 7, y: row }, { x: 5, y: row });
+        }
+      } else if (selectedMove.castling === "queenside") {
+        // King: 4 -> 2
+        newBoard.move(selectedPiece.matrixPosition, { x: 2, y: row });
+        // Rook: 0 -> 3
+        const rook = newBoard.getPieceAt(0, row);
+        if (rook) {
+          newBoard.move({ x: 0, y: row }, { x: 3, y: row });
         }
       } else {
         // Regular move
@@ -391,35 +389,38 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
                       key={index}
                       className="piece"
                       style={{
+                        position: "relative", // <--- IMPORTANT
                         zIndex: 2,
                         border: selectedPiece === piece ? "2px solid yellow" : "none",
                         borderRadius: "50%",
                       }}
                     >
-                      {/* If the piece is a king in check, overlay a red circle */}
                       {kingInCheck && (
                         <div
                           style={{
                             position: "absolute",
-                            width: "55px",
-                            height: "55px",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
                             border: "2px solid red",
                             borderRadius: "50%",
                             boxSizing: "border-box",
                             pointerEvents: "none",
+                            zIndex: 3,
                           }}
                         />
                       )}
-                      {piece.white && equippedSkinsMapping[piece.constructor.name] ? (
-                        <img
-                          src={imageMapping[equippedSkinsMapping[piece.constructor.name]]}
+                    {piece.white && equippedSkinsMapping[piece.constructor.name.toLowerCase()] ? (
+                      <img
+                          src={imageMapping[equippedSkinsMapping[piece.constructor.name.toLowerCase()]]}
                           alt={piece.constructor.name}
                           style={{ width: "100%", height: "100%" }}
                         />
                       ) : (
                         piece.render()
                       )}
-                    </span>
+                  </span>
                   );
                 }
                 return null;
