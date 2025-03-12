@@ -1,9 +1,11 @@
-// js/Pages/Pieces/Knight.jsx
+// Knight.jsx
 import Piece from './Piece';
 import WhiteKnight from '../../../Images/WhiteKnight.png';
 import BlackKnight from '../../../Images/BlackKnight.png';
 
 class Knight extends Piece {
+  static type = 'knight';
+
   canMove(x, y, board) {
     const dx = Math.abs(this.matrixPosition.x - x);
     const dy = Math.abs(this.matrixPosition.y - y);
@@ -18,7 +20,6 @@ class Knight extends Piece {
       { dx: 1, dy: 2 }, { dx: 1, dy: -2 },
       { dx: -1, dy: 2 }, { dx: -1, dy: -2 }
     ];
-
     knightMoves.forEach(({ dx, dy }) => {
       const x = this.matrixPosition.x + dx;
       const y = this.matrixPosition.y + dy;
@@ -29,12 +30,17 @@ class Knight extends Piece {
         }
       }
     });
-
     return moves;
   }
 
   render() {
-    return <img src={this.white ? WhiteKnight : BlackKnight} alt="Knight" style={{ width: '100%', height: '100%' }} />;
+    return (
+      <img
+        src={this.white ? WhiteKnight : BlackKnight}
+        alt="Knight"
+        style={{ width: '100%', height: '100%' }}
+      />
+    );
   }
 }
 

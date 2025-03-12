@@ -1,24 +1,22 @@
-// js/Pages/Pieces/Bishop.jsx
+// Bishop.jsx
 import Piece from './Piece';
 import WhiteBishop from '../../../Images/WhiteBishop.png';
 import BlackBishop from '../../../Images/BlackBishop.png';
 
 class Bishop extends Piece {
+  static type = 'bishop';
+
   canMove(x, y, board) {
     if (Math.abs(x - this.matrixPosition.x) !== Math.abs(y - this.matrixPosition.y)) return false;
-
     const directionX = x > this.matrixPosition.x ? 1 : -1;
     const directionY = y > this.matrixPosition.y ? 1 : -1;
-
     let checkX = this.matrixPosition.x + directionX;
     let checkY = this.matrixPosition.y + directionY;
-
     while (checkX !== x || checkY !== y) {
       if (board.getPieceAt(checkX, checkY)) return false;
       checkX += directionX;
       checkY += directionY;
     }
-
     const target = board.getPieceAt(x, y);
     return !target || target.white !== this.white;
   }
@@ -29,7 +27,6 @@ class Bishop extends Piece {
       { dx: 1, dy: 1 }, { dx: -1, dy: 1 },
       { dx: 1, dy: -1 }, { dx: -1, dy: -1 }
     ];
-
     directions.forEach(({ dx, dy }) => {
       let x = this.matrixPosition.x + dx;
       let y = this.matrixPosition.y + dy;
@@ -43,12 +40,17 @@ class Bishop extends Piece {
         moves.push({ x, y });
       }
     });
-
     return moves;
   }
 
   render() {
-    return <img src={this.white ? WhiteBishop : BlackBishop} alt="Bishop" style={{ width: '100%', height: '100%' }} />;
+    return (
+      <img
+        src={this.white ? WhiteBishop : BlackBishop}
+        alt="Bishop"
+        style={{ width: '100%', height: '100%' }}
+      />
+    );
   }
 }
 

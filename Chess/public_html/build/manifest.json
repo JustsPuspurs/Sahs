@@ -11,8 +11,8 @@
       "assets/BlueKing-CNr92plg.png"
     ]
   },
-  "_PC-oQe50dvh.js": {
-    "file": "assets/PC-oQe50dvh.js",
+  "_PC-CggNWgSz.js": {
+    "file": "assets/PC-CggNWgSz.js",
     "name": "PC",
     "isDynamicEntry": true,
     "imports": [
@@ -116,18 +116,18 @@
     "isEntry": true
   },
   "resources/js/Pages/ChessBoard.jsx": {
-    "file": "assets/ChessBoard-CPyZEKei.js",
+    "file": "assets/ChessBoard-C_s3iRrt.js",
     "name": "ChessBoard",
     "src": "resources/js/Pages/ChessBoard.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_PC-oQe50dvh.js",
+      "_PC-CggNWgSz.js",
       "_BlueKing-BUktslDH.js"
     ]
   },
   "resources/js/Pages/DataPopup.jsx": {
-    "file": "assets/DataPopup-CVLUCeRG.js",
+    "file": "assets/DataPopup-DmC0cRBy.js",
     "name": "DataPopup",
     "src": "resources/js/Pages/DataPopup.jsx",
     "isDynamicEntry": true,
@@ -136,7 +136,7 @@
     ]
   },
   "resources/js/Pages/Home.jsx": {
-    "file": "assets/Home-D9rkoqQu.js",
+    "file": "assets/Home-DcoK7EZC.js",
     "name": "Home",
     "src": "resources/js/Pages/Home.jsx",
     "isDynamicEntry": true,
@@ -149,7 +149,7 @@
       "resources/js/Pages/RecordGameModal.jsx",
       "resources/js/Pages/Shop.jsx",
       "resources/js/Pages/DataPopup.jsx",
-      "_PC-oQe50dvh.js",
+      "_PC-CggNWgSz.js",
       "_BlueKing-BUktslDH.js"
     ],
     "css": [
@@ -160,7 +160,7 @@
     ]
   },
   "resources/js/Pages/Login.jsx": {
-    "file": "assets/Login-BfWCZ06E.js",
+    "file": "assets/Login-BM4IE8sa.js",
     "name": "Login",
     "src": "resources/js/Pages/Login.jsx",
     "isDynamicEntry": true,
@@ -169,7 +169,7 @@
     ]
   },
   "resources/js/Pages/MoveList.jsx": {
-    "file": "assets/MoveList-BjxkY8sh.js",
+    "file": "assets/MoveList-UD_eOsOg.js",
     "name": "MoveList",
     "src": "resources/js/Pages/MoveList.jsx",
     "isDynamicEntry": true,
@@ -178,7 +178,7 @@
     ]
   },
   "resources/js/Pages/RecordGameModal.jsx": {
-    "file": "assets/RecordGameModal-B8erxNmA.js",
+    "file": "assets/RecordGameModal-S0WbjPOL.js",
     "name": "RecordGameModal",
     "src": "resources/js/Pages/RecordGameModal.jsx",
     "isDynamicEntry": true,
@@ -187,7 +187,7 @@
     ]
   },
   "resources/js/Pages/Register.jsx": {
-    "file": "assets/Register-CvqJIvl4.js",
+    "file": "assets/Register-akJCQRr-.js",
     "name": "Register",
     "src": "resources/js/Pages/Register.jsx",
     "isDynamicEntry": true,
@@ -196,7 +196,7 @@
     ]
   },
   "resources/js/Pages/Shop.jsx": {
-    "file": "assets/Shop-CjQSIXt-.js",
+    "file": "assets/Shop-DFzykM-P.js",
     "name": "Shop",
     "src": "resources/js/Pages/Shop.jsx",
     "isDynamicEntry": true,
@@ -206,7 +206,7 @@
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-DFjWCmx6.js",
+    "file": "assets/app-By7uF19q.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
@@ -216,7 +216,7 @@
       "resources/js/Pages/Home.jsx",
       "resources/js/Pages/Login.jsx",
       "resources/js/Pages/MoveList.jsx",
-      "_PC-oQe50dvh.js",
+      "_PC-CggNWgSz.js",
       "resources/js/Pages/RecordGameModal.jsx",
       "resources/js/Pages/Register.jsx",
       "resources/js/Pages/Shop.jsx"

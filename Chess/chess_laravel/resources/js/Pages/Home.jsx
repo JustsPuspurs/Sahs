@@ -37,14 +37,13 @@ const Home = () => {
     }
   };
 
-   const equippedMappingWhite = {};
-     ownedSkinsState.forEach((skin) => {
-     if (skin.pivot && skin.pivot.equipped) {
-       // Convert the piece type to lower case so it matches the key in ChessBoard.jsx
-       equippedMappingWhite[skin.piece_type.toLowerCase()] = skin.image.toLowerCase();
-     }
-   });
-
+  const equippedMappingWhite = {};
+  ownedSkinsState.forEach((skin) => {
+   if (skin.pivot && skin.pivot.equipped) {
+      equippedMappingWhite[skin.piece_type.toLowerCase()] = skin.image.toLowerCase();
+   }
+  });
+  
   const handleModalClose = () => setIsModalOpen(false);
   const handleShopClose = () => setIsShopOpen(false);
 

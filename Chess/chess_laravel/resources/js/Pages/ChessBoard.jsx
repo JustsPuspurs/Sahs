@@ -9,6 +9,7 @@ import King from "./Pieces/King";
 import { runMinimax, applyMove } from "./PC";
 import axios from "axios";
 
+// Import blue piece images
 import BluePawn from '../../Images/BluePawn.png';
 import BlueRook from '../../Images/BlueRook.png';
 import BlueKnight from '../../Images/BlueKnight.png';
@@ -16,18 +17,20 @@ import BlueBishop from '../../Images/BlueBishop.png';
 import BlueQueen from '../../Images/BlueQueen.png';
 import BlueKing from '../../Images/BlueKing.png';
 
+// Import white promotion images
 import WhiteQueen from '../../Images/WhiteQueen.png';
 import WhiteRook from '../../Images/WhiteRook.png';
 import WhiteKnight from '../../Images/WhiteKnight.png';
 import WhiteBishop from '../../Images/WhiteBishop.png';
 
+// Use normalized keys (all lowercase) in our mapping.
 const imageMapping = {
-  'images/blue_pawn.png': BluePawn,
-  'images/blue_rook.png': BlueRook,
-  'images/blue_knight.png': BlueKnight,
-  'images/blue_bishop.png': BlueBishop,
-  'images/blue_queen.png': BlueQueen,
-  'images/blue_king.png': BlueKing,
+  blue_pawn: BluePawn,
+  blue_rook: BlueRook,
+  blue_knight: BlueKnight,
+  blue_bishop: BlueBishop,
+  blue_queen: BlueQueen,
+  blue_king: BlueKing,
 };
 
 const defaultPromotionImages = {
@@ -71,13 +74,11 @@ const promotePawn = (pawn, promotionChoice) => {
   }
 };
 
-// Use applyMove to simulate moves so that moves leaving king in check are filtered out.
-const getLegalMovesForPiece = (piece, board) => {
-  return piece.generateMoves(board).filter(move => {
+const getLegalMovesForPiece = (piece, board) =>
+  piece.generateMoves(board).filter(move => {
     const newBoard = applyMove(board, { from: piece.matrixPosition, to: move });
     return newBoard !== board;
   });
-};
 
 const isSquareHighlighted = (x, y, moves) =>
   moves.some(move => move.x === x && move.y === y);
@@ -97,8 +98,13 @@ const getAlgebraicMove = (piece, destCol, destRow) => {
     Queen: "q",
     King: "k"
   };
-  const prefix = pieceAbbreviations[piece.constructor.name] || "";
+  const type = getPieceType(piece);
+  const prefix = pieceAbbreviations[type.charAt(0).toUpperCase() + type.slice(1)] || "";
   return prefix + convertCoordinates(destCol, destRow);
+};
+
+const getPieceType = (piece) => {
+  return piece.constructor.type || piece.constructor.name.toLowerCase();
 };
 
 const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, ref) => {
@@ -109,9 +115,22 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
   const [playerTotalTime, setPlayerTotalTime] = useState(0);
   const [gameSaved, setGameSaved] = useState(false);
   const [promotionInfo, setPromotionInfo] = useState(null);
-
   const playerStartTimeRef = useRef(null);
   const lastPlayerMoveTimeRef = useRef(null);
+
+  // getEquippedImage now normalizes the equipped skin string.
+  const getEquippedImage = (piece) => {
+    const type = getPieceType(piece);
+    let equippedSkin = equippedSkinsMapping[type];
+    if (equippedSkin) {
+      // Remove the "images/" prefix and ".png" extension so that "images/blue_pawn.png" becomes "blue_pawn"
+      equippedSkin = equippedSkin.replace("images/", "").replace(".png", "");
+      if (imageMapping.hasOwnProperty(equippedSkin)) {
+        return imageMapping[equippedSkin];
+      }
+    }
+    return null;
+  };  
 
   const handleRetire = () => {
     setGameResult("Black wins by resignation");
@@ -135,9 +154,7 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
         side: "White",
         result: playerResult
       })
-      .then(() => {
-        setGameSaved(true);
-      })
+      .then(() => setGameSaved(true))
       .catch(() => {});
   };
 
@@ -157,6 +174,7 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
   };
 
   const handlePromotionChoice = (promotionChoice) => {
+    console.log("Promotion choice:", promotionChoice);
     if (!promotionInfo) return;
     const { board: pendingBoard, pawn } = promotionInfo;
     const promotedPiece = promotePawn(pawn, promotionChoice);
@@ -173,7 +191,7 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
       return;
     }
 
-    // Let the AI make its move after pawn promotion.
+    // AI move after promotion.
     setWhitesMove(false);
     setTimeout(() => {
       const result = runMinimax(pendingBoard, 3, false);
@@ -194,11 +212,9 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
             setGameResult(resultAfterAI);
           }
         } else {
-          // No valid move available – AI resigns.
           setGameResult("Game over: AI resigns");
         }
       } else {
-        // No move returned by minimax – AI resigns.
         setGameResult("Game over: AI resigns");
       }
       setWhitesMove(true);
@@ -208,9 +224,7 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
   const handleSquareClick = (col, row) => {
     if (gameResult || promotionInfo) return;
 
-    const legalMoves = selectedPiece
-      ? getLegalMovesForPiece(selectedPiece, board)
-      : [];
+    const legalMoves = selectedPiece ? getLegalMovesForPiece(selectedPiece, board) : [];
 
     if (selectedPiece && isSquareHighlighted(col, row, legalMoves)) {
       const now = Date.now();
@@ -227,39 +241,32 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
       const whiteMoveNotation = getAlgebraicMove(selectedPiece, col, row);
       setMoveHistory(prev => [...prev, { white: whiteMoveNotation, black: "" }]);
 
-      // Check if it's a castling move
       const selectedMove = legalMoves.find(move => move.x === col && move.y === row);
 
-      // 1) Kingside: e->g (x=4->6), rook h->f (x=7->5)
-      // 2) Queenside: e->b (x=4->1), rook a->c (x=0->2)
-      if (selectedMove.castling === "kingside") {
-        // King: 4 -> 6
+      if (selectedMove?.castling === "kingside") {
         newBoard.move(selectedPiece.matrixPosition, { x: 6, y: row });
-        // Rook: 7 -> 5
         const rook = newBoard.getPieceAt(7, row);
         if (rook) {
           newBoard.move({ x: 7, y: row }, { x: 5, y: row });
         }
-      } else if (selectedMove.castling === "queenside") {
-        // King: 4 -> 2
+      } else if (selectedMove?.castling === "queenside") {
         newBoard.move(selectedPiece.matrixPosition, { x: 2, y: row });
-        // Rook: 0 -> 3
         const rook = newBoard.getPieceAt(0, row);
         if (rook) {
           newBoard.move({ x: 0, y: row }, { x: 3, y: row });
         }
       } else {
-        // Regular move
         newBoard.move(selectedPiece.matrixPosition, { x: col, y: row });
       }
 
-      // Handle pawn promotion
-      if (selectedPiece.constructor.name === "Pawn") {
+      // Pawn promotion check.
+      if (selectedPiece.constructor.type === "pawn") {
         const movedPawn = newBoard.getPieceAt(col, row);
         if (
           (movedPawn.white && movedPawn.matrixPosition.y === 0) ||
           (!movedPawn.white && movedPawn.matrixPosition.y === 7)
         ) {
+          console.log("Pawn promotion triggered for:", movedPawn);
           setPromotionInfo({ board: newBoard, pawn: movedPawn });
           return;
         }
@@ -274,7 +281,7 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
         return;
       }
 
-      // AI's turn
+      // AI's turn.
       setWhitesMove(false);
       setTimeout(() => {
         const result = runMinimax(newBoard, 3, false);
@@ -295,11 +302,9 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
               setGameResult(resultAfterAI);
             }
           } else {
-            // No valid move available – AI resigns.
             setGameResult("Game over: AI resigns");
           }
         } else {
-          // No move returned by minimax – AI resigns.
           setGameResult("Game over: AI resigns");
         }
         setWhitesMove(true);
@@ -316,7 +321,6 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
     }
   };
 
-  // Game over check using legal moves from getLegalMovesForPiece.
   const checkGameOver = (brd, isWhitePlayer) => {
     let legalMoves = [];
     brd.pieces.forEach(p => {
@@ -332,10 +336,9 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
     return null;
   };
 
-  // Local check: determine if the king is in check by examining opponent moves.
   const isKingInCheck = (brd, isWhitePlayer) => {
     const king = brd.pieces.find(
-      p => p.constructor.name === "King" && p.white === isWhitePlayer
+      p => p.constructor.type === "king" && p.white === isWhitePlayer
     );
     if (!king) return false;
     let opponentMoves = [];
@@ -344,11 +347,15 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
         opponentMoves = opponentMoves.concat(p.generateMoves(brd));
       }
     });
-    return opponentMoves.some(
+    const inCheck = opponentMoves.some(
       move =>
         move.x === king.matrixPosition.x &&
         move.y === king.matrixPosition.y
     );
+    if (inCheck) {
+      console.log(`King (${king.white ? "White" : "Black"}) is in check`);
+    }
+    return inCheck;
   };
 
   const highlightMoves = selectedPiece
@@ -358,76 +365,84 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
       <div className="chessboard">
-        {Array(8).fill().map((_, row) =>
-          Array(8).fill().map((_, col) => (
-            <div
-              key={`square-${row}-${col}`}
-              className={`square ${(row + col) % 2 === 0 ? "light" : "dark"}`}
-              onClick={() => handleSquareClick(col, row)}
-            >
-              {isSquareHighlighted(col, row, highlightMoves) && (
+        {Array(8)
+          .fill()
+          .map((_, row) =>
+            Array(8)
+              .fill()
+              .map((_, col) => (
                 <div
-                  style={{
-                    position: "absolute",
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: "rgba(0,255,0,0.4)",
-                    borderRadius: "50%",
-                    zIndex: 1,
-                  }}
-                />
-              )}
-              {board.pieces.map((piece, index) => {
-                if (
-                  piece &&
-                  piece.matrixPosition.x === col &&
-                  piece.matrixPosition.y === row
-                ) {
-                  const kingInCheck = piece.constructor.name === "King" && isKingInCheck(board, piece.white);
-                  return (
-                    <span
-                      key={index}
-                      className="piece"
+                  key={`square-${row}-${col}`}
+                  className={`square ${(row + col) % 2 === 0 ? "light" : "dark"}`}
+                  onClick={() => handleSquareClick(col, row)}
+                  style={{ position: "relative" }}
+                >
+                  {isSquareHighlighted(col, row, highlightMoves) && (
+                    <div
                       style={{
-                        position: "relative", // <--- IMPORTANT
-                        zIndex: 2,
-                        border: selectedPiece === piece ? "2px solid yellow" : "none",
+                        position: "absolute",
+                        width: "20px",
+                        height: "20px",
+                        backgroundColor: "rgba(0,255,0,0.4)",
                         borderRadius: "50%",
+                        zIndex: 1,
                       }}
-                    >
-                      {kingInCheck && (
-                        <div
+                    />
+                  )}
+                  {board.pieces.map((piece, index) => {
+                    if (
+                      piece &&
+                      piece.matrixPosition.x === col &&
+                      piece.matrixPosition.y === row
+                    ) {
+                      const kingInCheck =
+                        piece.constructor.type === "king" &&
+                        isKingInCheck(board, piece.white);
+                      const equippedImage = getEquippedImage(piece);
+                      return (
+                        <span
+                          key={index}
+                          className="piece"
                           style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "100%",
-                            height: "100%",
-                            border: "2px solid red",
+                            position: "relative",
+                            zIndex: 2,
+                            border: selectedPiece === piece ? "2px solid yellow" : "none",
                             borderRadius: "50%",
-                            boxSizing: "border-box",
-                            pointerEvents: "none",
-                            zIndex: 3,
                           }}
-                        />
-                      )}
-                    {piece.white && equippedSkinsMapping[piece.constructor.name.toLowerCase()] ? (
-                      <img
-                          src={imageMapping[equippedSkinsMapping[piece.constructor.name.toLowerCase()]]}
-                          alt={piece.constructor.name}
-                          style={{ width: "100%", height: "100%" }}
-                        />
-                      ) : (
-                        piece.render()
-                      )}
-                  </span>
-                  );
-                }
-                return null;
-              })}
-            </div>
-          ))
-        )}
+                        >
+                          {kingInCheck && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                border: "2px solid red",
+                                borderRadius: "50%",
+                                boxSizing: "border-box",
+                                pointerEvents: "none",
+                                zIndex: 3,
+                              }}
+                            />
+                          )}
+                          {piece.white && equippedImage ? (
+                            <img
+                              src={equippedImage}
+                              alt={piece.constructor.name}
+                              style={{ width: "100%", height: "100%" }}
+                            />
+                          ) : (
+                            piece.render()
+                          )}
+                        </span>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              ))
+          )}
       </div>
 
       {promotionInfo && (
@@ -457,9 +472,14 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
             }}
           >
             {["Queen", "Rook", "Bishop", "Knight"].map(pieceType => {
+              const key = pieceType.toLowerCase();
               const imgSrc =
-                equippedSkinsMapping && equippedSkinsMapping[pieceType]
-                  ? imageMapping[equippedSkinsMapping[pieceType]]
+                equippedSkinsMapping && equippedSkinsMapping[key]
+                  ? imageMapping[
+                      equippedSkinsMapping[key]
+                        .replace("images/", "")
+                        .replace(".png", "")
+                    ]
                   : defaultPromotionImages[pieceType];
               return (
                 <img
