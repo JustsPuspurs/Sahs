@@ -116,7 +116,6 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
   const [promotionInfo, setPromotionInfo] = useState(null);
   const playerStartTimeRef = useRef(null);
   const lastPlayerMoveTimeRef = useRef(null);
-
   // getEquippedImage now normalizes the equipped skin string.
   const getEquippedImage = (piece) => {
     const type = getPieceType(piece);

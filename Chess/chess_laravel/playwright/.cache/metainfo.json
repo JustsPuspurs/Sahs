@@ -1,0 +1,60 @@
+{
+  "version": "1.51.0",
+  "viteVersion": "5.4.14",
+  "registerSourceHash": "ea233d95b980072c81eb49458aee55f5d33fdb02",
+  "components": [
+    {
+      "id": "C__xampp_htdocs_ceram_Sahs_Chess_chess_laravel_resources_js_Pages_MoveList",
+      "filename": "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\tests\\MoveList.test.jsx",
+      "importSource": "../resources/js/Pages/MoveList"
+    }
+  ],
+  "sources": {
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/playwright/index.html": {
+      "timestamp": 1741873509030.2205
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/playwright/index.tsx": {
+      "timestamp": 1741874703521.311
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/jsx-runtime.js": {
+      "timestamp": 1741617960198.5706
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/index.js": {
+      "timestamp": 1741617960065.9834
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react-dom/client.js": {
+      "timestamp": 1741617960068.5334
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@playwright/experimental-ct-react/hooks.mjs": {
+      "timestamp": 1741865934855.7932
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/resources/js/Pages/MoveList.jsx": {
+      "timestamp": 1741617881947.8647
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/cjs/react.production.min.js": {
+      "timestamp": 1741617960769.2622
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react-dom/index.js": {
+      "timestamp": 1741617960121.2085
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/cjs/react-jsx-runtime.production.min.js": {
+      "timestamp": 1741617960543.2227
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react-dom/cjs/react-dom.production.min.js": {
+      "timestamp": 1741617961586.3481
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/scheduler/index.js": {
+      "timestamp": 1741617960065.9834
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/scheduler/cjs/scheduler.production.min.js": {
+      "timestamp": 1741617960610.287
+    }
+  },
+  "deps": {
+    "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\resources\\js\\Pages\\MoveList.jsx": [
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\resources\\js\\Pages\\MoveList.jsx",
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\node_modules\\react\\jsx-runtime.js",
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\node_modules\\react\\index.js"
+    ]
+  }
+}
