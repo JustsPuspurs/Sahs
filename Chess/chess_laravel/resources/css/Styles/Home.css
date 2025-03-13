@@ -64,6 +64,9 @@
   background-color: #4a4a4a;
   align-self: center;
 }
+.welcome-section{
+  margin:10px;
+}
 
 .content {
   display: flex;
@@ -321,9 +324,12 @@ form button:hover {
 /* Shop Styles */
 .shop-modal-content {
   width: 80%;
+  height: 90%;
   max-width: 80%;
   margin: 0 auto;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 .shop-modal-content .pagination {
   display: flex;
@@ -379,7 +385,7 @@ form button:hover {
 .custom-buttons-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  margin-bottom: 10px;
 }
 .custom-button {
   padding: 5px 5px;
@@ -443,7 +449,7 @@ form button:hover {
   font-size: 0.9rem;
 }
 .scrollable-skins {
-  max-height: 500px;
+  flex: 1;
   overflow-y: auto;
   margin-bottom: 10px;
 }

@@ -23,7 +23,6 @@ import WhiteRook from '../../Images/WhiteRook.png';
 import WhiteKnight from '../../Images/WhiteKnight.png';
 import WhiteBishop from '../../Images/WhiteBishop.png';
 
-// Use normalized keys (all lowercase) in our mapping.
 const imageMapping = {
   blue_pawn: BluePawn,
   blue_rook: BlueRook,
@@ -123,7 +122,6 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
     const type = getPieceType(piece);
     let equippedSkin = equippedSkinsMapping[type];
     if (equippedSkin) {
-      // Remove the "images/" prefix and ".png" extension so that "images/blue_pawn.png" becomes "blue_pawn"
       equippedSkin = equippedSkin.replace("images/", "").replace(".png", "");
       if (imageMapping.hasOwnProperty(equippedSkin)) {
         return imageMapping[equippedSkin];
@@ -309,7 +307,6 @@ const ChessBoard = ({ moveHistory, setMoveHistory, equippedSkinsMapping = {} }, 
         }
         setWhitesMove(true);
       }, 500);
-
       return;
     }
 
