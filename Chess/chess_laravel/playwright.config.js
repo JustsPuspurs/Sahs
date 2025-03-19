@@ -1,10 +1,14 @@
-export default {
-  testDir: './tests',
-  timeout: 30000,
-  use: {
-    baseURL: 'http://127.0.0.1:8000',
-    headless: true,
-    viewport: { width: 1280, height: 720 },
-    ignoreHTTPSErrors: true,
-  },
-};
+// playwright.config.js
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: 'e2e',
+  timeout: 60000,
+  expect: { timeout: 10000 },
+  projects: [
+    {
+      name: 'e2e-chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
+});

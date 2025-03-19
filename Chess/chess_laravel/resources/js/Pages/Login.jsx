@@ -12,7 +12,7 @@ const Login = ({ isOpen, onClose }) => {
     Inertia.post('/login', { username, password }, {
       onSuccess: () => {
         setUsername('');
-        setPassword('');
+        setPassword('')
         setTimeout(() => {
           if (onClose) onClose();
         }, 500);

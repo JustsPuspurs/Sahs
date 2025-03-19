@@ -1,8 +1,23 @@
 {
-  "version": "1.51.0",
+  "version": "1.51.1",
   "viteVersion": "5.4.14",
   "registerSourceHash": "ea233d95b980072c81eb49458aee55f5d33fdb02",
   "components": [
+    {
+      "id": "C__xampp_htdocs_ceram_Sahs_Chess_chess_laravel_resources_js_Hello",
+      "filename": "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\tests\\components\\Hello.ct.test.jsx",
+      "importSource": "../../resources/js/Hello"
+    },
+    {
+      "id": "C__xampp_htdocs_ceram_Sahs_Chess_chess_laravel_tests_resources_js_Pages_Login",
+      "filename": "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\tests\\components\\Login.ct.test.jsx",
+      "importSource": "../resources/js/Pages/Login"
+    },
+    {
+      "id": "C__xampp_htdocs_ceram_Sahs_Chess_chess_laravel_tests_components_Wrapper",
+      "filename": "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\tests\\components\\Login.ct.test.jsx",
+      "importSource": "./Wrapper"
+    },
     {
       "id": "C__xampp_htdocs_ceram_Sahs_Chess_chess_laravel_resources_js_Pages_MoveList",
       "filename": "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\tests\\MoveList.test.jsx",
@@ -11,49 +26,303 @@
   ],
   "sources": {
     "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/playwright/index.html": {
-      "timestamp": 1741873509030.2205
+      "timestamp": 1742386076098.6116
     },
     "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/playwright/index.tsx": {
       "timestamp": 1741874703521.311
     },
-    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/jsx-runtime.js": {
-      "timestamp": 1741617960198.5706
-    },
     "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/index.js": {
-      "timestamp": 1741617960065.9834
+      "timestamp": 1742387667691.2854
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/jsx-dev-runtime.js": {
+      "timestamp": 1742387667761.3223
     },
     "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react-dom/client.js": {
-      "timestamp": 1741617960068.5334
+      "timestamp": 1742387667691.2854
     },
     "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@playwright/experimental-ct-react/hooks.mjs": {
-      "timestamp": 1741865934855.7932
+      "timestamp": 1742387681481.2356
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/resources/js/Pages/Login.jsx": {
+      "timestamp": 1742199919209.731
     },
     "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/resources/js/Pages/MoveList.jsx": {
       "timestamp": 1741617881947.8647
     },
-    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/cjs/react.production.min.js": {
-      "timestamp": 1741617960769.2622
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/tests/components/Wrapper.jsx": {
+      "timestamp": 1742387415425.717
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/resources/js/Hello.jsx": {
+      "timestamp": 1742385632613.3623
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/dist/index.js": {
+      "timestamp": 1742387667724.3706
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia-react/dist/index.js": {
+      "timestamp": 1742387667937.4766
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/cjs/react-jsx-dev-runtime.development.js": {
+      "timestamp": 1742387667877.44
     },
     "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react-dom/index.js": {
-      "timestamp": 1741617960121.2085
+      "timestamp": 1742387667762.3838
     },
-    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/cjs/react-jsx-runtime.production.min.js": {
-      "timestamp": 1741617960543.2227
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react/cjs/react.development.js": {
+      "timestamp": 1742387668100.2188
     },
-    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react-dom/cjs/react-dom.production.min.js": {
-      "timestamp": 1741617961586.3481
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/index.js": {
+      "timestamp": 1742387668234.665
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/qs/lib/index.js": {
+      "timestamp": 1742387674249.795
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/deepmerge/dist/cjs.js": {
+      "timestamp": 1742387667769.412
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/lodash.isequal/index.js": {
+      "timestamp": 1742387667833.205
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/axios.js": {
+      "timestamp": 1742387667824.172
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/qs/lib/stringify.js": {
+      "timestamp": 1742387674266.8286
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/qs/lib/parse.js": {
+      "timestamp": 1742387674251.8015
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/qs/lib/formats.js": {
+      "timestamp": 1742387674249.1055
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/react-dom/cjs/react-dom.development.js": {
+      "timestamp": 1742387668795.3235
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/utils.js": {
+      "timestamp": 1742387668410.4556
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/bind.js": {
+      "timestamp": 1742387667952.1785
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/core/mergeConfig.js": {
+      "timestamp": 1742387668288.4197
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/defaults.js": {
+      "timestamp": 1742387668175.486
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/core/Axios.js": {
+      "timestamp": 1742387667878.9534
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/cancel/Cancel.js": {
+      "timestamp": 1742387668032.2004
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/cancel/CancelToken.js": {
+      "timestamp": 1742387668075.484
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/cancel/isCancel.js": {
+      "timestamp": 1742387668272.3643
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/isAxiosError.js": {
+      "timestamp": 1742387668263.337
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/side-channel/index.js": {
+      "timestamp": 1742387667836.7085
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/spread.js": {
+      "timestamp": 1742387668335.5884
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/qs/lib/utils.js": {
+      "timestamp": 1742387674841.5984
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/normalizeHeaderName.js": {
+      "timestamp": 1742387668305.4543
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/core/enhanceError.js": {
+      "timestamp": 1742387668207.9028
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/buildURL.js": {
+      "timestamp": 1742387668001.5867
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/core/InterceptorManager.js": {
+      "timestamp": 1742387668247.886
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/adapters/xhr.js": {
+      "timestamp": 1742387668440.238
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/core/dispatchRequest.js": {
+      "timestamp": 1742387668198.8916
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/es-errors/type.js": {
+      "timestamp": 1742387667968.042
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/validator.js": {
+      "timestamp": 1742387668415.4539
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/object-inspect/index.js": {
+      "timestamp": 1742387668209.5981
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/side-channel-map/index.js": {
+      "timestamp": 1742387667835.2021
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/side-channel-weakmap/index.js": {
+      "timestamp": 1742387667834.2036
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/side-channel-list/index.js": {
+      "timestamp": 1742387667835.2021
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/core/settle.js": {
+      "timestamp": 1742387668328.5852
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/cookies.js": {
+      "timestamp": 1742387668117.768
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/core/buildFullPath.js": {
+      "timestamp": 1742387667972.057
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/parseHeaders.js": {
+      "timestamp": 1742387668322.0693
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/isURLSameOrigin.js": {
+      "timestamp": 1742387668280.3982
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/core/createError.js": {
+      "timestamp": 1742387668163.459
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/core/transformData.js": {
+      "timestamp": 1742387668343.276
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/package.json": {
+      "timestamp": 1742387668471.6418
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/get-intrinsic/index.js": {
+      "timestamp": 1742387667866.8066
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/call-bound/index.js": {
+      "timestamp": 1742387673847.521
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/isAbsoluteURL.js": {
+      "timestamp": 1742387668253.973
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/es-object-atoms/index.js": {
+      "timestamp": 1742387667753.287
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/combineURLs.js": {
+      "timestamp": 1742387668101.2185
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/es-errors/index.js": {
+      "timestamp": 1742387667787.9558
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/es-errors/ref.js": {
+      "timestamp": 1742387667923.9426
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/es-errors/range.js": {
+      "timestamp": 1742387667887.9653
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/es-errors/syntax.js": {
+      "timestamp": 1742387667948.1702
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/es-errors/uri.js": {
+      "timestamp": 1742387667992.664
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/math-intrinsics/floor.js": {
+      "timestamp": 1742387667787.9558
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/math-intrinsics/abs.js": {
+      "timestamp": 1742387667754.2878
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/math-intrinsics/max.js": {
+      "timestamp": 1742387667992.664
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/math-intrinsics/min.js": {
+      "timestamp": 1742387668107.7346
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/math-intrinsics/pow.js": {
+      "timestamp": 1742387668170.4873
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/math-intrinsics/round.js": {
+      "timestamp": 1742387668179.5237
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/gopd/index.js": {
+      "timestamp": 1742387667789.4766
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/math-intrinsics/sign.js": {
+      "timestamp": 1742387668192.2031
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/has-symbols/index.js": {
+      "timestamp": 1742387667898.718
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/get-proto/index.js": {
+      "timestamp": 1742387667787.9558
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/es-errors/eval.js": {
+      "timestamp": 1742387667754.2878
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/es-define-property/index.js": {
+      "timestamp": 1742387667787.9558
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/get-proto/Object.getPrototypeOf.js": {
+      "timestamp": 1742387667889.689
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/call-bind-apply-helpers/functionApply.js": {
+      "timestamp": 1742387667882.9543
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/get-proto/Reflect.getPrototypeOf.js": {
+      "timestamp": 1742387667923.9426
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/call-bind-apply-helpers/functionCall.js": {
+      "timestamp": 1742387667918.2048
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/function-bind/index.js": {
+      "timestamp": 1742387667889.689
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/hasown/index.js": {
+      "timestamp": 1742387667786.9482
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/call-bind-apply-helpers/index.js": {
+      "timestamp": 1742387667942.1465
     },
     "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/scheduler/index.js": {
-      "timestamp": 1741617960065.9834
+      "timestamp": 1742387667681.2583
     },
-    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/scheduler/cjs/scheduler.production.min.js": {
-      "timestamp": 1741617960610.287
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/gopd/gOPD.js": {
+      "timestamp": 1742387667755.2874
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/has-symbols/shams.js": {
+      "timestamp": 1742387667963.7234
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/math-intrinsics/isNaN.js": {
+      "timestamp": 1742387667948.1702
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/dunder-proto/get.js": {
+      "timestamp": 1742387667786.9482
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/function-bind/implementation.js": {
+      "timestamp": 1742387667852.2644
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/call-bind-apply-helpers/actualApply.js": {
+      "timestamp": 1742387667790.4788
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/scheduler/cjs/scheduler.development.js": {
+      "timestamp": 1742387667996.6724
+    },
+    "C:/xampp/htdocs/ceram/Sahs/Chess/chess_laravel/node_modules/call-bind-apply-helpers/reflectApply.js": {
+      "timestamp": 1742387667993.6719
     }
   },
   "deps": {
+    "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\resources\\js\\Hello.jsx": [
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\resources\\js\\Hello.jsx",
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\node_modules\\react\\jsx-dev-runtime.js",
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\node_modules\\react\\index.js"
+    ],
+    "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\tests\\components\\Wrapper.jsx": [
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\tests\\components\\Wrapper.jsx",
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\node_modules\\react\\jsx-dev-runtime.js",
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\node_modules\\react\\index.js",
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\node_modules\\@inertiajs\\inertia-react\\dist\\index.js"
+    ],
     "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\resources\\js\\Pages\\MoveList.jsx": [
       "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\resources\\js\\Pages\\MoveList.jsx",
-      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\node_modules\\react\\jsx-runtime.js",
+      "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\node_modules\\react\\jsx-dev-runtime.js",
       "C:\\xampp\\htdocs\\ceram\\Sahs\\Chess\\chess_laravel\\node_modules\\react\\index.js"
     ]
   }
