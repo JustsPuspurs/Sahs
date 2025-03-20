@@ -13,8 +13,6 @@ test.describe('Pawn Movement Tests', () => {
   test('user can move pawn forward one square', async ({ page }) => {
     await loginUser(page);
     const squares = page.locator('.chessboard .square');
-    // White pawn at (0,6): index = 6*8 + 0 = 48.
-    // One square forward: (0,5): index = 5*8 + 0 = 40.
     const pawnSquareIndex = 48;
     const oneSquareDestination = 40;
     await squares.nth(pawnSquareIndex).click();
@@ -26,8 +24,6 @@ test.describe('Pawn Movement Tests', () => {
   test('user can move pawn forward two squares from starting position', async ({ page }) => {
     await loginUser(page);
     const squares = page.locator('.chessboard .square');
-    // White pawn at (0,6): index = 48.
-    // Two squares forward: (0,4): row 4, col 0 => index = 4*8 + 0 = 32.
     const pawnSquareIndex = 48;
     const twoSquareDestination = 32;
     await squares.nth(pawnSquareIndex).click();
