@@ -13,8 +13,8 @@ test.describe('Knight Movement Tests', () => {
   test('user can move knight in an L-shape from (1,7) to (2,5)', async ({ page }) => {
     await loginUser(page);
     const squares = page.locator('.chessboard .square');
-    const knightStartIndex = 57;
-    const destinationIndex = 42;
+    const knightStartIndex = 57; // (1,7)
+    const destinationIndex = 42; // (2,5)
     await expect(squares.first()).toBeVisible();
     await squares.nth(knightStartIndex).click();
     await squares.nth(destinationIndex).click();
